@@ -9,6 +9,11 @@ const nextConfig = {
       "profile.line-scdn.net"
     ],
   },
+  experimental: {
+    outputFileTracingIncludes: {
+      "/**": ["./prisma/dev.db"],
+    },
+  },
 };
 
 export default nextConfig;

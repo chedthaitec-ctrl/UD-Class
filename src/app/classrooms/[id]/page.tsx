@@ -10,28 +10,33 @@ export default async function ClassroomDetailPage({
 }: {
   params: { id: string };
 }) {
-  const classroom = await prisma.classroom.findUnique({
-    where: { id: params.id },
-    include: {
-      teacher: true,
-      students: {
-        include: {
-          egg: { include: { hatchedMonster: true } },
-          submissions: true,
+  let classroom = null;
+  try {
+    classroom = await prisma.classroom.findUnique({
+      where: { id: params.id },
+      include: {
+        teacher: true,
+        students: {
+          include: {
+            egg: { include: { hatchedMonster: true } },
+            submissions: true,
+          },
+          orderBy: { seatNumber: "asc" },
         },
-        orderBy: { seatNumber: "asc" },
+        assignments: {
+          include: { submissions: true },
+          orderBy: { dueDate: "asc" },
+        },
+        attendances: {
+          include: { records: true },
+          orderBy: { date: "desc" },
+          take: 5,
+        },
       },
-      assignments: {
-        include: { submissions: true },
-        orderBy: { dueDate: "asc" },
-      },
-      attendances: {
-        include: { records: true },
-        orderBy: { date: "desc" },
-        take: 5,
-      },
-    },
-  });
+    });
+  } catch (err) {
+    console.error("Classroom detail database error:", err);
+  }
 
   if (!classroom) return notFound();
 

@@ -5,17 +5,29 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0; // Dynamic on load
 
 export default async function DashboardPage() {
-  // Fetch statistics directly via Prisma
-  const [
-    classroomsCount,
-    studentsCount,
-    lineLinkedStudentsCount,
-    assignmentsCount,
-    hatchedEggsCount,
-    classrooms,
-    recentAssignments,
-    topStudents,
-  ] = await Promise.all([
+  let classroomsCount = 0;
+  let studentsCount = 0;
+  let lineLinkedStudentsCount = 0;
+  let assignmentsCount = 0;
+  let hatchedEggsCount = 0;
+  let classrooms: any[] = [];
+  let recentAssignments: any[] = [];
+  let topStudents: any[] = [];
+  let presentCount = 0;
+  let attendanceRate = 100;
+  let dbError: string | null = null;
+
+  try {
+    const [
+      cCount,
+      sCount,
+      lCount,
+      aCount,
+      hCount,
+      clsList,
+      rAssignments,
+      tStudents,
+    ] = await Promise.all([
     prisma.classroom.count(),
     prisma.student.count(),
     prisma.student.count({ where: { lineUserId: { not: null } } }),
@@ -51,6 +63,15 @@ export default async function DashboardPage() {
     }),
   ]);
 
+    classroomsCount = cCount;
+    studentsCount = sCount;
+    lineLinkedStudentsCount = lCount;
+    assignmentsCount = aCount;
+    hatchedEggsCount = hCount;
+    classrooms = clsList;
+    recentAssignments = rAssignments;
+    topStudents = tStudents;
+
   // Today's attendance stats
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -63,8 +84,27 @@ export default async function DashboardPage() {
   const totalAttended = todayAttendance?.records.length || 0;
   const attendanceRate = totalAttended > 0 ? Math.round((presentCount / totalAttended) * 100) : 100;
 
+  } catch (err: any) {
+    console.error("Dashboard database query error:", err);
+    dbError = err?.message || "Database connection error";
+  }
+
   return (
     <div className="space-y-8">
+      {dbError && (
+        <div className="bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl p-5 flex items-start gap-4 shadow-sm">
+          <span className="text-2xl">⚠️</span>
+          <div className="space-y-1">
+            <h4 className="font-bold text-sm text-amber-900">
+              สถานะการเชื่อมต่อฐานข้อมูล
+            </h4>
+            <p className="text-xs text-amber-800 leading-relaxed">
+              ระบบกำลังเชื่อมโยงฐานข้อมูล หรือหากรันบน Vercel Production แนะนำเชื่อมต่อกับ Supabase / PostgreSQL โดยระบุตัวแปร <code className="bg-amber-100 font-mono px-1.5 py-0.5 rounded text-amber-950 font-bold">DATABASE_URL</code> ใน Vercel Environment Variables
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Welcome Banner */}
       <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
         <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-emerald-500/10 to-transparent pointer-events-none" />
