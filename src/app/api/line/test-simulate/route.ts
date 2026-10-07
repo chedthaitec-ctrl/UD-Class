@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { dispatchLineEvent } from "@/lib/line/dispatcher";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   try {
     const { text, type = "message", groupId, userId, postbackData } = await req.json();

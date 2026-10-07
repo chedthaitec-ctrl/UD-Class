@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 0; // Dynamic on load
 
 export default async function DashboardPage() {

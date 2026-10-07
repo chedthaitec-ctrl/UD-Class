@@ -3,6 +3,8 @@ import crypto from "crypto";
 import { dispatchLineEvent } from "@/lib/line/dispatcher";
 import { replyLineMessage } from "@/lib/line/client";
 
+export const dynamic = "force-dynamic";
+
 function validateSignature(body: string, channelSecret: string, signature: string): boolean {
   if (!channelSecret || channelSecret === "YOUR_LINE_CHANNEL_SECRET") {
     // โหมด Development อนุญาตให้ผ่านได้ถ้ายังไม่ได้ตั้งค่า Secret

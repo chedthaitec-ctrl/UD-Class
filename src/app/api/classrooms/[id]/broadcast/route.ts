@@ -5,6 +5,8 @@ import { createAssignmentFlex } from "@/lib/line/flex/assignmentFlex";
 import { createReminderFlex } from "@/lib/line/flex/reminderFlex";
 import { createAttendanceFlex } from "@/lib/line/flex/attendanceFlex";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(
   req: NextRequest,
   { params }: { params: { id: string } }

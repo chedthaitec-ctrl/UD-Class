@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { addStudentExp } from "@/lib/gamification/engine";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   try {
     const { studentId, classroomId, amount = 15, points = 0 } = await req.json();
