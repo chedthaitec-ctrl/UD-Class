@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import DashboardClassrooms from "@/components/DashboardClassrooms";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0; // Dynamic on load
@@ -215,74 +216,7 @@ export default async function DashboardPage() {
                 ดูทั้งหมด ({classrooms.length}) →
               </Link>
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {classrooms.map((cls) => {
-                const isLineConnected = !!cls.lineGroupId;
-                return (
-                  <div
-                    key={cls.id}
-                    className="bg-white rounded-xl p-5 border border-slate-200/80 shadow-sm hover:border-slate-300 transition flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between gap-2 mb-3">
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold ${
-                            isLineConnected
-                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                              : "bg-slate-100 text-slate-600 border border-slate-200"
-                          }`}
-                        >
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              isLineConnected ? "bg-emerald-500 animate-pulse" : "bg-slate-400"
-                            }`}
-                          />
-                          {isLineConnected ? "LINE Group เชื่อมต่อแล้ว" : "ยังไม่ได้ผูกกลุ่ม"}
-                        </span>
-                        <span className="text-xs text-slate-400 font-medium">
-                          ปี {cls.academicYear} / เทอม {cls.term}
-                        </span>
-                      </div>
-
-                      <h4 className="font-bold text-slate-900 text-base mb-1">
-                        {cls.name}
-                      </h4>
-                      <p className="text-xs text-slate-500 mb-4 line-clamp-1">
-                        ผู้สอน: {cls.teacher.name}
-                      </p>
-
-                      <div className="grid grid-cols-2 gap-2 p-2.5 bg-slate-50 rounded-lg text-xs mb-4">
-                        <div>
-                          <span className="text-slate-400 block text-[10px]">นักเรียน</span>
-                          <span className="font-bold text-slate-800">{cls._count.students} คน</span>
-                        </div>
-                        <div>
-                          <span className="text-slate-400 block text-[10px]">การบ้าน</span>
-                          <span className="font-bold text-slate-800">{cls._count.assignments} ชิ้น</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
-                      <Link
-                        href={`/classrooms/${cls.id}`}
-                        className="flex-1 text-center py-2 rounded-lg text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition"
-                      >
-                        เข้าสู่ห้องเรียน
-                      </Link>
-                      <Link
-                        href={`/classrooms/${cls.id}/attendance`}
-                        className="px-3 py-2 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition"
-                        title="เช็คชื่อทันที"
-                      >
-                        📋 เช็คชื่อ
-                      </Link>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            <DashboardClassrooms initialClassrooms={classrooms} />
           </div>
 
           {/* Assignments Monitor */}
