@@ -1,0 +1,118 @@
+// Prisma Schema for UD-Class System
+// Supported: SQLite (default local) / PostgreSQL / Supabase
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Teacher {
+  id          String      @id @default(cuid())
+  email       String      @unique
+  name        String
+  classrooms  Classroom[]
+  createdAt   DateTime    @default(now())
+}
+
+model Classroom {
+  id           String       @id @default(cuid())
+  teacherId    String
+  teacher      Teacher      @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  name         String       // e.g. "วิทยาศาสตร์ ม.3/1"
+  lineGroupId  String?      @unique // ผูกกับ Group ID จริงของ LINE
+  academicYear String       @default("2569")
+  term         String       @default("1")
+  students     Student[]
+  assignments  Assignment[]
+  attendances  Attendance[]
+  createdAt    DateTime     @default(now())
+}
+
+model Student {
+  id          String             @id @default(cuid())
+  classroomId String
+  classroom   Classroom          @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  lineUserId  String?            @unique
+  seatNumber  Int                // เลขที่
+  name        String             // ชื่อ-นามสกุล
+  avatarUrl   String?
+  totalPoints Int                @default(0)
+  exp         Int                @default(0)
+  level       Int                @default(1)
+  submissions Submission[]
+  attendances AttendanceRecord[]
+  egg         StudentEgg?
+  createdAt   DateTime           @default(now())
+}
+
+model Assignment {
+  id          String       @id @default(cuid())
+  classroomId String
+  classroom   Classroom    @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  dueDate     DateTime
+  maxScore    Int          @default(100)
+  expReward   Int          @default(50)
+  submissions Submission[]
+  createdAt   DateTime     @default(now())
+}
+
+model Submission {
+  id           String     @id @default(cuid())
+  assignmentId String
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  studentId    String
+  student      Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  content      String?    // ไฟล์หรือลิงก์งาน / รายละเอียดงาน
+  submittedAt  DateTime   @default(now())
+  score        Float?
+  status       String     @default("SUBMITTED") // SUBMITTED, GRADED, LATE
+}
+
+model Attendance {
+  id          String             @id @default(cuid())
+  classroomId String
+  classroom   Classroom          @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  date        DateTime           @default(now())
+  records     AttendanceRecord[]
+}
+
+model AttendanceRecord {
+  id           String     @id @default(cuid())
+  attendanceId String
+  attendance   Attendance @relation(fields: [attendanceId], references: [id], onDelete: Cascade)
+  studentId    String
+  student      Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  status       String     @default("PRESENT") // PRESENT, LATE, ABSENT, LEAVE
+}
+
+// ระบบ Gamification ไข่มอนสเตอร์
+model StudentEgg {
+  id               String   @id @default(cuid())
+  studentId        String   @unique
+  student          Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  eggName          String   @default("ไข่มอนสเตอร์เริ่มต้น")
+  eggType          String   @default("NORMAL") // NORMAL, RARE, LEGENDARY
+  eggColor         String   @default("amber")
+  currentExp       Int      @default(0)
+  targetExp        Int      @default(100)
+  isHatched        Boolean  @default(false)
+  hatchedMonsterId String?
+  hatchedMonster   Monster? @relation(fields: [hatchedMonsterId], references: [id])
+  updatedAt        DateTime @updatedAt
+}
+
+model Monster {
+  id          String       @id @default(cuid())
+  name        String
+  species     String
+  rarity      String       // COMMON, RARE, EPIC, LEGENDARY
+  element     String       // FIRE, WATER, NATURE, LIGHT, DARK
+  imageUrl    String
+  studentEggs StudentEgg[]
+}
