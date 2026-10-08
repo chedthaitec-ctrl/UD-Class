@@ -54,42 +54,53 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden font-prompt">
       {/* Background Decorative Glows */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-indigo-600/15 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-600/5 rounded-full blur-[140px] pointer-events-none" />
 
-      <div className="w-full max-w-md space-y-6 relative z-10">
+      <div className="w-full max-w-md space-y-6 relative z-10 animate-fade-in">
         {/* Brand Header */}
-        <div className="text-center space-y-2">
-          <div className="w-20 h-20 mx-auto flex items-center justify-center">
+        <div className="text-center space-y-3">
+          <div className="w-20 h-20 mx-auto flex items-center justify-center relative">
+            <div className="absolute inset-0 bg-indigo-500/20 rounded-3xl blur-xl" />
             <img
               src="/logo.png"
               alt="UD-Class Logo"
-              className="w-full h-full object-contain drop-shadow-2xl"
+              className="w-full h-full object-contain relative z-10 drop-shadow-2xl"
             />
           </div>
-          <h1 className="text-2xl font-black text-white tracking-tight">
-            UD-Class System
-          </h1>
-          <p className="text-xs text-slate-400">
-            ระบบบริหารจัดการชั้นเรียน โรงเรียนอุดมดรุณี
-          </p>
+          <div>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold bg-white/10 text-white/90 border border-white/10 backdrop-blur-md mb-2">
+              <span>🏫 โรงเรียนอุดมดรุณี</span>
+              <span>•</span>
+              <span className="text-emerald-400">ระบบพร้อมใช้งาน</span>
+            </div>
+            <h1 className="text-3xl font-black text-white tracking-tight">
+              UD-Class System
+            </h1>
+            <p className="text-xs text-slate-400 mt-1">
+              ระบบบริหารจัดการชั้นเรียน & Gamification ผ่าน LINE
+            </p>
+          </div>
         </div>
 
-        {/* Production Login Form Card */}
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl">
-          <div className="border-b border-slate-800 pb-3">
-            <h2 className="text-sm font-bold text-white">
+        {/* Modern Glassmorphic Login Form Card */}
+        <div className="bg-slate-900/80 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
+
+          <div className="border-b border-white/10 pb-4">
+            <h2 className="text-sm font-black text-white tracking-tight">
               เข้าสู่ระบบ (Sign In)
             </h2>
-            <p className="text-[11px] text-slate-400">
-              กรอกอีเมลและรหัสผ่านเพื่อเข้าใช้งานห้องเรียนของคุณครู
+            <p className="text-[11px] text-slate-400 mt-0.5">
+              กรอกอีเมลและรหัสผ่านเพื่อเข้าสู่ห้องเรียนของคุณครู
             </p>
           </div>
 
           {error && (
-            <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-semibold flex items-start gap-2.5">
+            <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-semibold flex items-start gap-2.5 animate-shake">
               <span className="text-base leading-none">⚠️</span>
               <span>{error}</span>
             </div>
@@ -97,7 +108,7 @@ function LoginForm() {
 
           <form onSubmit={handleLogin} className="space-y-4 text-xs">
             <div>
-              <label className="block text-slate-300 font-semibold mb-1">
+              <label className="block text-slate-300 font-bold mb-1.5">
                 อีเมลประจำตัว (Email)
               </label>
               <input
@@ -106,19 +117,19 @@ function LoginForm() {
                 placeholder="เช่น chedtha.teacher@school.ac.th"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                className="w-full px-4 py-3 rounded-2xl bg-slate-950/80 border border-slate-700/80 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition"
               />
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="block text-slate-300 font-semibold">
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-slate-300 font-bold">
                   รหัสผ่าน (Password)
                 </label>
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="text-[11px] text-blue-400 hover:text-blue-300 transition"
+                  className="text-[11px] font-semibold text-indigo-400 hover:text-indigo-300 transition"
                 >
                   {showPassword ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน"}
                 </button>
@@ -129,14 +140,14 @@ function LoginForm() {
                 placeholder="กรอกรหัสผ่านของคุณ"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 font-mono transition"
+                className="w-full px-4 py-3 rounded-2xl bg-slate-950/80 border border-slate-700/80 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 font-mono transition"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl font-bold bg-blue-600 hover:bg-blue-500 text-white transition shadow-lg shadow-blue-600/30 disabled:opacity-50 flex items-center justify-center gap-2 mt-3 text-xs"
+              className="w-full py-3.5 rounded-2xl font-bold bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-700 hover:from-indigo-500 hover:via-blue-500 hover:to-indigo-600 text-white transition shadow-lg shadow-indigo-600/30 disabled:opacity-50 flex items-center justify-center gap-2 mt-4 text-xs cursor-pointer active:scale-95"
             >
               <span>{loading ? "กำลังตรวจสอบข้อมูล..." : "เข้าสู่ระบบ"}</span>
               <span>→</span>
@@ -144,12 +155,12 @@ function LoginForm() {
           </form>
 
           {/* School Contact Note */}
-          <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800 text-[11px] text-slate-400 space-y-1">
-            <div className="font-semibold text-slate-300 flex items-center gap-1.5">
+          <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-white/5 text-[11px] text-slate-400 space-y-1">
+            <div className="font-bold text-slate-300 flex items-center gap-1.5">
               <span>🏫</span>
               <span>ศูนย์เทคโนโลยีสารสนเทศ (IT Center)</span>
             </div>
-            <p className="text-[10px] leading-relaxed">
+            <p className="text-[10px] leading-relaxed text-slate-400">
               สำหรับคุณครูที่ยังไม่มีบัญชีเข้าสู่ระบบ หรือต้องการรีเซ็ตรหัสผ่าน กรุณาติดต่อผู้ดูแลระบบโรงเรียน
             </p>
           </div>
@@ -160,23 +171,24 @@ function LoginForm() {
           <button
             type="button"
             onClick={() => setShowAccountReference(!showAccountReference)}
-            className="text-[11px] text-slate-500 hover:text-slate-400 transition underline underline-offset-4"
+            className="text-[11px] font-semibold text-slate-400 hover:text-slate-200 transition underline underline-offset-4"
           >
             {showAccountReference
               ? "▲ ซ่อนข้อมูลบัญชีเริ่มต้น"
-              : "▼ ดูข้อมูลบัญชีเริ่มต้นของระบบ (สำหรับคุณครูและแอดมิน)"}
+              : "▼ ดูข้อมูลบัญชีเริ่มต้นของระบบ (สำหรับทดสอบ)"}
           </button>
 
           {showAccountReference && (
-            <div className="mt-3 p-4 bg-slate-900/90 border border-slate-800 rounded-2xl text-left text-xs space-y-2.5 animate-fade-in shadow-xl">
-              <div className="text-[11px] font-bold text-slate-300 pb-1 border-b border-slate-800">
-                บัญชีเริ่มต้นในระบบ:
+            <div className="mt-3 p-4 bg-slate-900/90 border border-white/10 rounded-3xl text-left text-xs space-y-2.5 animate-fade-in shadow-xl backdrop-blur-xl">
+              <div className="text-[11px] font-bold text-slate-300 pb-1.5 border-b border-white/10 flex items-center justify-between">
+                <span>บัญชีในระบบ (คลิกเพื่อกรอกอัตโนมัติ):</span>
+                <span className="text-[10px] text-slate-400">คลิกที่การ์ดเพื่อใส่ข้อมูล</span>
               </div>
 
               {/* Admin */}
               <div
                 onClick={() => fillCredentials("admin@udclass.ac.th", "admin")}
-                className="p-2 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 cursor-pointer transition flex items-center justify-between"
+                className="p-2.5 rounded-2xl bg-slate-950/80 hover:bg-slate-800 border border-white/5 hover:border-amber-500/40 cursor-pointer transition flex items-center justify-between group"
               >
                 <div>
                   <div className="font-bold text-amber-300 text-[11px]">
@@ -186,15 +198,15 @@ function LoginForm() {
                     admin@udclass.ac.th
                   </div>
                 </div>
-                <span className="text-[10px] text-slate-400 hover:text-white">
-                  ใส่ข้อมูลนี้ ⇥
+                <span className="text-[10px] font-bold text-amber-400 group-hover:translate-x-0.5 transition">
+                  คลิกเพื่อใส่ ⇥
                 </span>
               </div>
 
               {/* Teacher Chedtha */}
               <div
                 onClick={() => fillCredentials("chedtha.teacher@school.ac.th", "123456")}
-                className="p-2 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 cursor-pointer transition flex items-center justify-between"
+                className="p-2.5 rounded-2xl bg-slate-950/80 hover:bg-slate-800 border border-white/5 hover:border-indigo-500/40 cursor-pointer transition flex items-center justify-between group"
               >
                 <div>
                   <div className="font-bold text-blue-300 text-[11px]">
@@ -204,15 +216,15 @@ function LoginForm() {
                     chedtha.teacher@school.ac.th
                   </div>
                 </div>
-                <span className="text-[10px] text-slate-400 hover:text-white">
-                  ใส่ข้อมูลนี้ ⇥
+                <span className="text-[10px] font-bold text-blue-400 group-hover:translate-x-0.5 transition">
+                  คลิกเพื่อใส่ ⇥
                 </span>
               </div>
 
               {/* Teacher Somchai */}
               <div
                 onClick={() => fillCredentials("somchai.math@school.ac.th", "123456")}
-                className="p-2 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 cursor-pointer transition flex items-center justify-between"
+                className="p-2.5 rounded-2xl bg-slate-950/80 hover:bg-slate-800 border border-white/5 hover:border-emerald-500/40 cursor-pointer transition flex items-center justify-between group"
               >
                 <div>
                   <div className="font-bold text-emerald-300 text-[11px]">
@@ -222,8 +234,8 @@ function LoginForm() {
                     somchai.math@school.ac.th
                   </div>
                 </div>
-                <span className="text-[10px] text-slate-400 hover:text-white">
-                  ใส่ข้อมูลนี้ ⇥
+                <span className="text-[10px] font-bold text-emerald-400 group-hover:translate-x-0.5 transition">
+                  คลิกเพื่อใส่ ⇥
                 </span>
               </div>
             </div>

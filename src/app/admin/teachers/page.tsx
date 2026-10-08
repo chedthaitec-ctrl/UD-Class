@@ -207,7 +207,7 @@ export default function AdminTeachersPage() {
         setTimeout(() => {
           router.push("/");
           router.refresh();
-        }, 600);
+        }, 500);
       } else {
         alert("ไม่สามารถสลับบัญชีได้: " + data.error);
       }
@@ -239,25 +239,32 @@ export default function AdminTeachersPage() {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-fade-in">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl border border-emerald-500/30 flex items-center gap-3 animate-bounce">
-          <span className="text-emerald-400 text-base">✅</span>
-          <span className="text-xs font-semibold">{toastMessage}</span>
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900/95 text-white px-5 py-3.5 rounded-2xl shadow-2xl border border-emerald-500/30 flex items-center gap-3 backdrop-blur-xl animate-fade-in">
+          <span className="text-emerald-400 text-lg">✅</span>
+          <span className="text-xs font-bold">{toastMessage}</span>
         </div>
       )}
 
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-slate-800">
-        <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -right-12 -bottom-12 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-1/4 w-48 h-48 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
+
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-              <span>🛡️ ศูนย์ควบคุมผู้ดูแลระบบ (Admin Panel)</span>
+          <div className="space-y-2.5">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 backdrop-blur-md">
+                🛡️ ศูนย์ควบคุมผู้ดูแลระบบ (Super Admin)
+              </span>
+              <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-white/10 text-white/90 border border-white/10 backdrop-blur-md">
+                ร.ร.อุดมดรุณี
+              </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-              จัดการสมาชิกคุณครู & ระบบห้องเรียน
+              จัดการสมาชิกคุณครู & สิทธิ์การสอน
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
               ควบคุมรายชื่อคุณครูผู้สอนในโรงเรียน เพิ่ม/ลบคุณครู กำหนดสิทธิ์ และดูแลความปลอดภัย โดยห้องเรียนจะถูกแยกเฉพาะของคุณครูแต่ละท่าน ไม่ปะปนกัน
@@ -278,7 +285,7 @@ export default function AdminTeachersPage() {
                 });
                 setShowAddModal(true);
               }}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition shadow-lg shadow-emerald-500/25 flex items-center gap-2"
+              className="px-5 py-3 rounded-2xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition shadow-lg shadow-emerald-500/25 flex items-center gap-2 cursor-pointer active:scale-95"
             >
               <span className="text-sm">➕</span>
               <span>เพิ่มคุณครูใหม่</span>
@@ -286,10 +293,10 @@ export default function AdminTeachersPage() {
             <button
               onClick={fetchTeachers}
               disabled={loading}
-              className="px-4 py-2.5 rounded-xl text-xs font-semibold bg-white/10 hover:bg-white/20 text-white transition backdrop-blur border border-white/10 flex items-center gap-2 disabled:opacity-50"
+              className="p-3 rounded-2xl text-xs font-semibold bg-white/10 hover:bg-white/20 text-white transition backdrop-blur border border-white/10 flex items-center justify-center disabled:opacity-50"
+              title="รีเฟรชข้อมูล"
             >
               <span className={`text-sm ${loading ? "animate-spin" : ""}`}>🔄</span>
-              <span>รีเฟรช</span>
             </button>
           </div>
         </div>
@@ -297,66 +304,73 @@ export default function AdminTeachersPage() {
 
       {/* KPI Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-2xl font-bold">
+        {/* Total Teachers */}
+        <div className="modern-card bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm flex items-center gap-4">
+          <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white flex items-center justify-center text-2xl font-bold shadow-md shadow-indigo-500/20 shrink-0">
             👥
           </div>
           <div>
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
               ครูในระบบทั้งหมด
             </p>
-            <h3 className="text-2xl font-black text-slate-900">
-              {teachers.length} <span className="text-xs font-normal text-slate-500">ท่าน</span>
+            <h3 className="text-2xl font-black text-slate-900 tracking-tight mt-0.5">
+              {teachers.length}{" "}
+              <span className="text-xs font-bold text-slate-400">ท่าน</span>
             </h3>
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl font-bold">
+        {/* Total Classrooms */}
+        <div className="modern-card bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm flex items-center gap-4">
+          <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center text-2xl font-bold shadow-md shadow-emerald-500/20 shrink-0">
             🏫
           </div>
           <div>
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
               ห้องเรียนทั้งโรงเรียน
             </p>
-            <h3 className="text-2xl font-black text-slate-900">
-              {totalClassrooms} <span className="text-xs font-normal text-slate-500">ห้อง</span>
+            <h3 className="text-2xl font-black text-slate-900 tracking-tight mt-0.5">
+              {totalClassrooms}{" "}
+              <span className="text-xs font-bold text-slate-400">ห้อง</span>
             </h3>
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl font-bold">
+        {/* Total Students */}
+        <div className="modern-card bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm flex items-center gap-4">
+          <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 text-white flex items-center justify-center text-2xl font-bold shadow-md shadow-blue-500/20 shrink-0">
             🎒
           </div>
           <div>
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-              นักเรียนในความดูแลรวม
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+              นักเรียนในระบบรวม
             </p>
-            <h3 className="text-2xl font-black text-slate-900">
-              {totalStudents} <span className="text-xs font-normal text-slate-500">คน</span>
+            <h3 className="text-2xl font-black text-slate-900 tracking-tight mt-0.5">
+              {totalStudents.toLocaleString()}{" "}
+              <span className="text-xs font-bold text-slate-400">คน</span>
             </h3>
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl font-bold">
+        {/* Super Admins */}
+        <div className="modern-card bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm flex items-center gap-4">
+          <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center text-2xl font-bold shadow-md shadow-amber-500/20 shrink-0">
             🛡️
           </div>
           <div>
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
               ผู้ดูแลระบบใหญ่ (Admin)
             </p>
-            <h3 className="text-2xl font-black text-slate-900">
+            <h3 className="text-2xl font-black text-slate-900 tracking-tight mt-0.5">
               {teachers.filter((t) => t.role === "ADMIN").length}{" "}
-              <span className="text-xs font-normal text-slate-500">ท่าน</span>
+              <span className="text-xs font-bold text-slate-400">ท่าน</span>
             </h3>
           </div>
         </div>
       </div>
 
-      {/* Filters & Search */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+      {/* Filters & Search Bar */}
+      <div className="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="w-full sm:w-80 relative">
           <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">
             🔍
@@ -366,18 +380,18 @@ export default function AdminTeachersPage() {
             placeholder="ค้นหาชื่อครู, อีเมล หรือกลุ่มสาระฯ..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-2xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
           />
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <span className="text-xs text-slate-500 font-semibold whitespace-nowrap">
-            สิทธิ์:
+        <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <span className="text-xs text-slate-500 font-bold whitespace-nowrap">
+            กรองตามสิทธิ์:
           </span>
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="px-3.5 py-2.5 border border-slate-200 rounded-2xl text-xs bg-slate-50/50 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             <option value="ALL">ทั้งหมด ({teachers.length})</option>
             <option value="TEACHER">
@@ -393,16 +407,19 @@ export default function AdminTeachersPage() {
       {/* Teachers List Table / Cards */}
       {loading ? (
         <div className="p-16 text-center text-slate-400 text-sm">
+          <div className="w-8 h-8 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
           กำลังโหลดรายชื่อคุณครู...
         </div>
       ) : filteredTeachers.length === 0 ? (
-        <div className="bg-white rounded-3xl p-16 text-center border border-slate-200 shadow-sm">
-          <div className="text-5xl mb-3">👨‍🏫</div>
+        <div className="bg-white rounded-3xl p-16 text-center border border-slate-200 shadow-sm max-w-lg mx-auto">
+          <div className="w-16 h-16 rounded-3xl bg-slate-100 flex items-center justify-center text-3xl mx-auto mb-4">
+            👨‍🏫
+          </div>
           <h3 className="font-bold text-slate-800 text-base mb-1">
             ไม่พบรายชื่อคุณครูที่ค้นหา
           </h3>
-          <p className="text-xs text-slate-500 mb-5">
-            สามารถเพิ่มคุณครูใหม่ได้โดยกดปุ่ม "เพิ่มคุณครูใหม่" ด้านบน
+          <p className="text-xs text-slate-500 mb-6">
+            ลองปรับเปลี่ยนคำค้นหา หรือกดปุ่ม "เพิ่มคุณครูใหม่" ด้านบน
           </p>
         </div>
       ) : (
@@ -414,33 +431,33 @@ export default function AdminTeachersPage() {
             return (
               <div
                 key={teacher.id}
-                className="bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition flex flex-col justify-between overflow-hidden relative group"
+                className="modern-card bg-white rounded-3xl border border-slate-200/80 p-6 flex flex-col justify-between relative group"
               >
                 {/* Card Top */}
-                <div className="p-6 space-y-4">
+                <div className="space-y-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-12 h-12 rounded-2xl flex items-center justify-center text-lg font-black shadow-inner ${
+                        className={`w-12 h-12 rounded-2xl flex items-center justify-center text-lg font-black shadow-sm ${
                           isAdmin
-                            ? "bg-amber-100 text-amber-800 border border-amber-200"
-                            : "bg-indigo-100 text-indigo-700 border border-indigo-200"
+                            ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-amber-500/20"
+                            : "bg-gradient-to-br from-indigo-500 to-blue-600 text-white shadow-indigo-500/20"
                         }`}
                       >
                         {teacher.name.charAt(0) || "ค"}
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-bold text-slate-900 text-sm">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <h3 className="font-bold text-slate-900 text-sm truncate">
                             {teacher.name}
                           </h3>
                           {isSelf && (
-                            <span className="px-1.5 py-0.5 text-[10px] font-bold bg-emerald-100 text-emerald-700 rounded-md">
-                              คุณ
+                            <span className="px-1.5 py-0.5 text-[9px] font-black bg-emerald-100 text-emerald-700 rounded-md">
+                              YOU
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-slate-500 truncate">
+                        <p className="text-xs text-slate-400 truncate">
                           {teacher.email}
                         </p>
                       </div>
@@ -448,7 +465,7 @@ export default function AdminTeachersPage() {
 
                     {/* Role Badge */}
                     <span
-                      className={`px-2.5 py-1 rounded-full text-[10px] font-bold inline-flex items-center gap-1 ${
+                      className={`px-2.5 py-1 rounded-full text-[10px] font-bold inline-flex items-center gap-1 shrink-0 ${
                         isAdmin
                           ? "bg-amber-50 text-amber-800 border border-amber-200"
                           : "bg-blue-50 text-blue-700 border border-blue-200"
@@ -460,17 +477,17 @@ export default function AdminTeachersPage() {
                   </div>
 
                   {/* Department & Contact */}
-                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs space-y-1.5">
+                  <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 text-xs space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-slate-400 text-[11px]">กลุ่มสาระฯ:</span>
-                      <span className="font-semibold text-slate-700 truncate max-w-[170px]">
+                      <span className="text-slate-400 text-[11px] font-medium">กลุ่มสาระฯ:</span>
+                      <span className="font-bold text-slate-700 truncate max-w-[180px]">
                         {teacher.department || "-"}
                       </span>
                     </div>
                     {teacher.phone && (
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-400 text-[11px]">เบอร์โทร:</span>
-                        <span className="font-mono text-slate-700">
+                        <span className="text-slate-400 text-[11px] font-medium">เบอร์โทร:</span>
+                        <span className="font-mono font-semibold text-slate-700">
                           {teacher.phone}
                         </span>
                       </div>
@@ -480,16 +497,16 @@ export default function AdminTeachersPage() {
                   {/* Classrooms managed by this teacher */}
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-slate-700">
-                        ห้องเรียนที่ดูแล ({teacher.classrooms.length} ห้อง):
+                      <span className="font-bold text-slate-700">
+                        ห้องเรียนในความดูแล ({teacher.classrooms.length} ห้อง):
                       </span>
-                      <span className="text-[11px] text-slate-400">
+                      <span className="text-[11px] font-semibold text-slate-400">
                         นักเรียนรวม {teacher.stats?.studentsCount || 0} คน
                       </span>
                     </div>
 
                     {teacher.classrooms.length === 0 ? (
-                      <div className="p-3 rounded-xl border border-dashed border-slate-200 text-center text-[11px] text-slate-400">
+                      <div className="p-3 rounded-2xl border border-dashed border-slate-200 text-center text-[11px] text-slate-400">
                         ยังไม่มีห้องเรียนในความดูแล
                       </div>
                     ) : (
@@ -497,13 +514,13 @@ export default function AdminTeachersPage() {
                         {teacher.classrooms.map((cls) => (
                           <div
                             key={cls.id}
-                            className="p-2 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-between text-[11px]"
+                            className="p-2 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between text-[11px]"
                           >
-                            <span className="font-medium text-slate-800 truncate">
+                            <span className="font-semibold text-slate-800 truncate">
                               🏫 {cls.name}
                             </span>
-                            <span className="text-slate-400 text-[10px] whitespace-nowrap ml-2">
-                              {cls._count.students} นักเรียน
+                            <span className="text-slate-400 text-[10px] whitespace-nowrap ml-2 font-medium">
+                              {cls._count.students} คน
                             </span>
                           </div>
                         ))}
@@ -513,11 +530,11 @@ export default function AdminTeachersPage() {
                 </div>
 
                 {/* Card Footer Actions */}
-                <div className="p-4 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between gap-2">
+                <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between gap-2">
                   {/* Switch to this teacher button */}
                   <button
                     onClick={() => handleSwitchTeacher(teacher)}
-                    className="flex-1 py-2 px-3 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition flex items-center justify-center gap-1.5 shadow-sm"
+                    className="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition flex items-center justify-center gap-1.5 shadow-sm active:scale-95"
                     title="สลับบัญชีเพื่อดูหน้าจอและห้องเรียนของครูท่านนี้"
                   >
                     <span>👁️</span>
@@ -531,7 +548,7 @@ export default function AdminTeachersPage() {
                       setEditingTeacher({ ...teacher });
                       setFormData((prev) => ({ ...prev, password: "" }));
                     }}
-                    className="p-2 rounded-xl text-xs font-semibold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 transition"
+                    className="p-2.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition"
                     title="แก้ไขข้อมูลครู"
                   >
                     ✏️
@@ -541,7 +558,7 @@ export default function AdminTeachersPage() {
                   <button
                     onClick={() => setDeletingTeacher(teacher)}
                     disabled={isSelf}
-                    className="p-2 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="p-2.5 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition disabled:opacity-30 disabled:cursor-not-allowed"
                     title={isSelf ? "ไม่สามารถลบบัญชีตัวเองได้" : "ลบคุณครูท่านนี้"}
                   >
                     🗑️
@@ -555,11 +572,11 @@ export default function AdminTeachersPage() {
 
       {/* Modal เพิ่มคุณครูใหม่ */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-5 text-xs">
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-5 text-xs border border-slate-100">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shrink-0">
                   ➕
                 </div>
                 <div>
@@ -573,21 +590,21 @@ export default function AdminTeachersPage() {
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="text-slate-400 hover:text-slate-600 text-lg font-bold"
+                className="text-slate-400 hover:text-slate-600 text-lg font-bold p-1 rounded-lg"
               >
                 ✕
               </button>
             </div>
 
             {errorMsg && (
-              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 font-medium">
+              <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 font-bold">
                 ⚠️ {errorMsg}
               </div>
             )}
 
             <form onSubmit={handleCreateTeacher} className="space-y-4">
               <div>
-                <label className="block text-slate-700 font-bold mb-1">
+                <label className="block text-slate-700 font-bold mb-1.5">
                   ชื่อ-นามสกุล *
                 </label>
                 <input
@@ -602,13 +619,13 @@ export default function AdminTeachersPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">
+                  <label className="block text-slate-700 font-bold mb-1.5">
                     อีเมล (ใช้เข้าสู่ระบบ) *
                   </label>
                   <input
                     type="email"
                     required
-                    placeholder="teacher@school.ac.th"
+                    placeholder="teacher@ud.ac.th"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -616,7 +633,7 @@ export default function AdminTeachersPage() {
                 </div>
 
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">
+                  <label className="block text-slate-700 font-bold mb-1.5">
                     รหัสผ่านเริ่มต้น *
                   </label>
                   <input
@@ -632,13 +649,13 @@ export default function AdminTeachersPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">
+                  <label className="block text-slate-700 font-bold mb-1.5">
                     กลุ่มสาระการเรียนรู้
                   </label>
                   <select
                     value={formData.department}
                     onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl bg-white text-slate-700"
+                    className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     {departmentsList.map((dept) => (
                       <option key={dept} value={dept}>
@@ -649,13 +666,13 @@ export default function AdminTeachersPage() {
                 </div>
 
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">
+                  <label className="block text-slate-700 font-bold mb-1.5">
                     สิทธิ์การใช้งาน
                   </label>
                   <select
                     value={formData.role}
                     onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl bg-white text-slate-700"
+                    className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     <option value="TEACHER">👨‍🏫 คุณครูผู้สอน (จัดการเฉพาะห้องตนเอง)</option>
                     <option value="ADMIN">🛡️ ผู้ดูแลระบบใหญ่ (Super Admin)</option>
@@ -664,7 +681,7 @@ export default function AdminTeachersPage() {
               </div>
 
               <div>
-                <label className="block text-slate-700 font-bold mb-1">
+                <label className="block text-slate-700 font-bold mb-1.5">
                   เบอร์โทรศัพท์ (ถ้ามี)
                 </label>
                 <input
@@ -672,22 +689,22 @@ export default function AdminTeachersPage() {
                   placeholder="081-xxx-xxxx"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl"
+                  className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-4 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition"
                 >
                   ยกเลิก
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-5 py-2.5 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/25 disabled:opacity-50 flex items-center gap-1.5"
+                  className="px-5 py-2.5 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/25 disabled:opacity-50 flex items-center gap-1.5 transition"
                 >
                   <span>{isSubmitting ? "กำลังบันทึก..." : "บันทึกข้อมูลครู"}</span>
                 </button>
@@ -699,11 +716,11 @@ export default function AdminTeachersPage() {
 
       {/* Modal แก้ไขข้อมูลครู */}
       {editingTeacher && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-5 text-xs">
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-5 text-xs border border-slate-100">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
+                <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl shrink-0">
                   ✏️
                 </div>
                 <div>
@@ -717,21 +734,21 @@ export default function AdminTeachersPage() {
               </div>
               <button
                 onClick={() => setEditingTeacher(null)}
-                className="text-slate-400 hover:text-slate-600 text-lg font-bold"
+                className="text-slate-400 hover:text-slate-600 text-lg font-bold p-1 rounded-lg"
               >
                 ✕
               </button>
             </div>
 
             {errorMsg && (
-              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 font-medium">
+              <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 font-bold">
                 ⚠️ {errorMsg}
               </div>
             )}
 
             <form onSubmit={handleUpdateTeacher} className="space-y-4">
               <div>
-                <label className="block text-slate-700 font-bold mb-1">
+                <label className="block text-slate-700 font-bold mb-1.5">
                   ชื่อ-นามสกุล *
                 </label>
                 <input
@@ -741,13 +758,13 @@ export default function AdminTeachersPage() {
                   onChange={(e) =>
                     setEditingTeacher({ ...editingTeacher, name: e.target.value })
                   }
-                  className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl"
+                  className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">
+                  <label className="block text-slate-700 font-bold mb-1.5">
                     อีเมล *
                   </label>
                   <input
@@ -757,12 +774,12 @@ export default function AdminTeachersPage() {
                     onChange={(e) =>
                       setEditingTeacher({ ...editingTeacher, email: e.target.value })
                     }
-                    className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl"
+                    className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">
+                  <label className="block text-slate-700 font-bold mb-1.5">
                     เปลี่ยนรหัสผ่านใหม่ (เว้นว่างหากไม่เปลี่ยน)
                   </label>
                   <input
@@ -770,14 +787,14 @@ export default function AdminTeachersPage() {
                     placeholder="กรอกรหัสใหม่..."
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl font-mono"
+                    className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">
+                  <label className="block text-slate-700 font-bold mb-1.5">
                     กลุ่มสาระการเรียนรู้
                   </label>
                   <select
@@ -785,7 +802,7 @@ export default function AdminTeachersPage() {
                     onChange={(e) =>
                       setEditingTeacher({ ...editingTeacher, department: e.target.value })
                     }
-                    className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl bg-white"
+                    className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   >
                     {departmentsList.map((dept) => (
                       <option key={dept} value={dept}>
@@ -796,7 +813,7 @@ export default function AdminTeachersPage() {
                 </div>
 
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">
+                  <label className="block text-slate-700 font-bold mb-1.5">
                     สิทธิ์การใช้งาน
                   </label>
                   <select
@@ -807,7 +824,7 @@ export default function AdminTeachersPage() {
                         role: e.target.value as "ADMIN" | "TEACHER",
                       })
                     }
-                    className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl bg-white"
+                    className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   >
                     <option value="TEACHER">👨‍🏫 คุณครูผู้สอน</option>
                     <option value="ADMIN">🛡️ ผู้ดูแลระบบใหญ่ (Super Admin)</option>
@@ -816,7 +833,7 @@ export default function AdminTeachersPage() {
               </div>
 
               <div>
-                <label className="block text-slate-700 font-bold mb-1">
+                <label className="block text-slate-700 font-bold mb-1.5">
                   เบอร์โทรศัพท์
                 </label>
                 <input
@@ -825,22 +842,22 @@ export default function AdminTeachersPage() {
                   onChange={(e) =>
                     setEditingTeacher({ ...editingTeacher, phone: e.target.value })
                   }
-                  className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl"
+                  className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-4 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setEditingTeacher(null)}
-                  className="px-4 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition"
                 >
                   ยกเลิก
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-5 py-2.5 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 disabled:opacity-50"
+                  className="px-5 py-2.5 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 disabled:opacity-50 transition"
                 >
                   {isSubmitting ? "กำลังบันทึก..." : "บันทึกการแก้ไข"}
                 </button>
@@ -852,10 +869,12 @@ export default function AdminTeachersPage() {
 
       {/* Modal ยืนยันการลบครูผู้สอน */}
       {deletingTeacher && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl space-y-4 text-xs">
-            <div className="flex items-center gap-3 text-rose-600 pb-2 border-b border-slate-100">
-              <span className="text-3xl">⚠️</span>
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl space-y-4 text-xs border border-slate-100">
+            <div className="flex items-center gap-3 text-rose-600 pb-3 border-b border-slate-100">
+              <div className="w-10 h-10 rounded-2xl bg-rose-50 flex items-center justify-center text-xl shrink-0">
+                ⚠️
+              </div>
               <div>
                 <h3 className="font-black text-slate-900 text-base">
                   ยืนยันการลบคุณครู
@@ -868,15 +887,18 @@ export default function AdminTeachersPage() {
 
             <p className="text-slate-600 leading-relaxed">
               คุณแน่ใจหรือไม่ว่าต้องการลบคุณครู{" "}
-              <strong className="text-slate-900 text-sm">
+              <strong className="text-slate-900 font-bold">
                 "{deletingTeacher.name}"
               </strong>{" "}
               ออกจากระบบ?
             </p>
 
-            <div className="p-3.5 bg-rose-50 rounded-2xl border border-rose-200 text-rose-800 space-y-1.5">
-              <div className="font-bold">⚠️ ข้อมูลที่จะถูกลบออกถาวร:</div>
-              <ul className="list-disc list-inside space-y-1 text-[11px]">
+            <div className="p-4 bg-rose-50/80 rounded-2xl border border-rose-200 text-rose-900 space-y-2">
+              <div className="font-bold flex items-center gap-1.5 text-rose-700">
+                <span>⚠️</span>
+                <span>ข้อมูลที่จะถูกลบออกถาวร:</span>
+              </div>
+              <ul className="list-disc list-inside space-y-1 text-[11px] text-rose-800">
                 <li>บัญชีและข้อมูลของคุณครู {deletingTeacher.name}</li>
                 <li>
                   ห้องเรียนทั้งหมดที่ครูท่านนี้ดูแล ({deletingTeacher.classrooms.length} ห้อง)
@@ -885,12 +907,12 @@ export default function AdminTeachersPage() {
               </ul>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-4 border-t border-slate-100">
+            <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100">
               <button
                 type="button"
                 disabled={isSubmitting}
                 onClick={() => setDeletingTeacher(null)}
-                className="px-4 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 transition disabled:opacity-50"
+                className="px-4 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition disabled:opacity-50"
               >
                 ยกเลิก
               </button>
