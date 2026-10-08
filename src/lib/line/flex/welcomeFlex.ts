@@ -4,8 +4,9 @@ export function createWelcomeGroupFlex(params: {
   groupId: string;
   classroomName?: string | null;
   isPaired: boolean;
+  autoEnrolledCount?: number;
 }): FlexMessage {
-  const { groupId, classroomName, isPaired } = params;
+  const { groupId, classroomName, isPaired, autoEnrolledCount } = params;
 
   return {
     type: "flex",
@@ -32,7 +33,7 @@ export function createWelcomeGroupFlex(params: {
               },
               {
                 type: "text",
-                text: isPaired ? "🟢 เชื่อมโยงแล้ว" : "🟡 รอผูกห้องเรียน",
+                text: isPaired ? "🟢 เชื่อมห้องเรียนแล้ว" : "🟡 รอผูกห้องเรียน",
                 color: isPaired ? "#4ade80" : "#facc15",
                 weight: "bold",
                 size: "xs",
@@ -56,14 +57,45 @@ export function createWelcomeGroupFlex(params: {
         paddingAll: "20px",
         spacing: "md",
         contents: [
+          // Auto-enroll badge callout
           {
-            type: "text",
-            text: isPaired
-              ? "กลุ่ม LINE นี้เชื่อมโยงกับระบบห้องเรียนเรียบร้อยแล้ว นักเรียนสามารถพิมพ์คำสั่งใช้งานได้ทันที!"
-              : "บ็อตได้เข้าร่วมกลุ่มแล้ว! นำ Group ID ด้านล่างไปกรอกในแดชบอร์ดคุณครู เพื่อผูกกับห้องเรียน:",
-            size: "xs",
-            color: "#4b5563",
-            wrap: true,
+            type: "box",
+            layout: "vertical",
+            backgroundColor: "#ecfdf5",
+            cornerRadius: "12px",
+            paddingAll: "14px",
+            contents: [
+              {
+                type: "box",
+                layout: "horizontal",
+                spacing: "xs",
+                contents: [
+                  {
+                    type: "text",
+                    text: "⚡",
+                    size: "sm",
+                    flex: 0,
+                  },
+                  {
+                    type: "text",
+                    text: "ระบบลงทะเบียนนักเรียนอัตโนมัติ (Auto-Enroll)",
+                    weight: "bold",
+                    size: "xs",
+                    color: "#065f46",
+                  },
+                ],
+              },
+              {
+                type: "text",
+                text: autoEnrolledCount && autoEnrolledCount > 0
+                  ? `ระบบได้ดึงนักเรียนเข้าห้องแล้ว ${autoEnrolledCount} คน พร้อมแจกไข่มอนสเตอร์ทันที!`
+                  : "นักเรียนในกลุ่มทุกคนจะถูกเพิ่มเข้าชั้นเรียนและได้รับไข่มอนสเตอร์อัตโนมัติทันทีที่พิมพ์ข้อความ โดยไม่ต้องพิมพ์ลงทะเบียนเลขที่!",
+                size: "xxs",
+                color: "#047857",
+                wrap: true,
+                margin: "xs",
+              },
+            ],
           },
           {
             type: "box",
@@ -106,31 +138,31 @@ export function createWelcomeGroupFlex(params: {
             contents: [
               {
                 type: "text",
-                text: "• #การบ้าน - ดูการบ้านที่มอบหมาย & ลิงก์ส่งงาน",
+                text: "• #การบ้าน - ดูการบ้านที่มอบหมาย & ตรวจสอบการส่ง",
                 size: "xxs",
                 color: "#475569",
               },
               {
                 type: "text",
-                text: "• #ไข่ - ตรวจสอบความคืบหน้าไข่มอนสเตอร์ของคุณ",
+                text: "• #ไข่ หรือ #มอนสเตอร์ - ดูสถานะไข่และเลเวลสะสม",
                 size: "xxs",
                 color: "#475569",
               },
               {
                 type: "text",
-                text: "• #ลงทะเบียน [เลขที่] - ผูกบัญชีไลน์กับเลขที่นักเรียน",
+                text: "• #สมาชิก - ดูรายชื่อเพื่อนและแต้มสะสมทั้งหมดในห้อง",
                 size: "xxs",
                 color: "#475569",
               },
               {
                 type: "text",
-                text: "• #สมาชิก - ดูรายชื่อเพื่อนและแต้มสะสมในห้อง",
+                text: "• #ลงทะเบียน [เลขที่] - ปรับเปลี่ยนเลขที่ (หากต้องการแก้ไข)",
                 size: "xxs",
                 color: "#475569",
               },
               {
                 type: "text",
-                text: "• #ทวงงาน - (สำหรับครู) สรุปรายชื่อคนที่ยังค้างส่งงาน",
+                text: "• #เช็คชื่อ - ดูสรุปการมาเรียนประจำวัน",
                 size: "xxs",
                 color: "#475569",
               },
@@ -149,8 +181,8 @@ export function createWelcomeGroupFlex(params: {
             color: "#06C755",
             action: {
               type: "message",
-              label: "📝 ดูการบ้าน",
-              text: "#การบ้าน",
+              label: "🥚 ส่องไข่ของฉัน",
+              text: "#ไข่",
             },
           },
           {
@@ -158,8 +190,8 @@ export function createWelcomeGroupFlex(params: {
             style: "secondary",
             action: {
               type: "message",
-              label: "🥚 ส่องไข่",
-              text: "#ไข่",
+              label: "📝 ดูการบ้าน",
+              text: "#การบ้าน",
             },
           },
         ],

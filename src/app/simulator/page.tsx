@@ -478,16 +478,16 @@ export default function LineSimulatorPage() {
                 className="w-full px-3 py-2 border border-slate-300 rounded-xl"
               >
                 <option value="U_student_01">
-                  ด.ช. กิตติศักดิ์ เจริญพร (เลขที่ 1 - ผูกแล้ว)
+                  ด.ช. กิตติศักดิ์ เจริญพร (เลขที่ 1)
                 </option>
                 <option value="U_student_02">
-                  ด.ช. ชัยวัฒน์ มั่นคง (เลขที่ 2 - ผูกแล้ว)
+                  ด.ช. ชัยวัฒน์ มั่นคง (เลขที่ 2)
                 </option>
-                <option value="U_student_03">
-                  ด.ญ. ณัฐณิชา ศรีสุข (เลขที่ 3 - มีมอนสเตอร์แล้ว)
+                <option value="U_student_new_somying">
+                  ✨ ด.ญ. สมหญิง จริงใจ (สมาชิกใหม่ - ทดสอบ Auto-Enroll)
                 </option>
-                <option value="U_student_unregistered">
-                  นักเรียนใหม่ (ยังไม่ได้พิมพ์ #ลงทะเบียน)
+                <option value="U_student_new_nattawut">
+                  ✨ นาย ณัฐวุฒิ ว่องไว (สมาชิกใหม่ - ทดสอบ Auto-Enroll)
                 </option>
                 <option value="U_teacher_chedtha">
                   ครูเชษฐ์ พัฒนาวิชาการ (Teacher)
@@ -507,11 +507,13 @@ export default function LineSimulatorPage() {
 
             <div className="grid grid-cols-2 gap-2 text-xs">
               <button
-                onClick={() => sendMessage("#การบ้าน")}
-                className="p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold border border-emerald-200 text-left transition"
+                onClick={() => sendMessage("สวัสดีครับคุณครูและเพื่อนๆ ทุกคน")}
+                className="col-span-2 p-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-left transition shadow-sm"
               >
-                <span className="block text-sm">📝 #การบ้าน</span>
-                <span className="text-[10px] text-emerald-600 font-normal">ดูการบ้าน & ลิงก์ส่งงาน</span>
+                <span className="block text-sm">💬 ทักทายในกลุ่ม (ทดสอบ Auto-Enroll ทันที)</span>
+                <span className="text-[10px] text-emerald-100 font-normal">
+                  จำลองสมาชิกส่งข้อความ ระบบจะดึงเข้าห้องเรียนและแจกไข่อัตโนมัติ!
+                </span>
               </button>
 
               <button
@@ -519,7 +521,15 @@ export default function LineSimulatorPage() {
                 className="p-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold border border-amber-200 text-left transition"
               >
                 <span className="block text-sm">🥚 #ไข่</span>
-                <span className="text-[10px] text-amber-600 font-normal">เช็คสถานะไข่ & มอนสเตอร์</span>
+                <span className="text-[10px] text-amber-600 font-normal">เช็คสถานะไข่ & มอนสเตอร์ทันที</span>
+              </button>
+
+              <button
+                onClick={() => sendMessage("#การบ้าน")}
+                className="p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold border border-emerald-200 text-left transition"
+              >
+                <span className="block text-sm">📝 #การบ้าน</span>
+                <span className="text-[10px] text-emerald-600 font-normal">ดูการบ้าน & ลิงก์ส่งงาน</span>
               </button>
 
               <button
