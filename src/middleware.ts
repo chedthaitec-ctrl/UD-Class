@@ -14,6 +14,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon.ico") ||
     pathname.startsWith("/logo.jpg") ||
+    pathname.startsWith("/logo.png") ||
     pathname.startsWith("/api/cron");
 
   if (isPublicPath) {
@@ -85,8 +86,8 @@ export const config = {
      * Match all request paths except for static files:
      * - _next/static (static files)
      * - _next/image (image optimization files)
-     * - favicon.ico, logo.jpg
+     * - favicon.ico, logo.jpg, logo.png
      */
-    "/((?!_next/static|_next/image|favicon.ico|logo.jpg).*)",
+    "/((?!_next/static|_next/image|favicon.ico|logo.jpg|logo.png).*)",
   ],
 };

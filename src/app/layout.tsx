@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "UD-Class | Classroom Management",
   description: "ระบบจัดการชั้นเรียน บ็อตทวงงาน เช็คชื่อ และ Gamification โรงเรียนอุดมดรุณี (UD-Class)",
   icons: {
-    icon: "/logo.jpg",
+    icon: "/logo.png",
   },
 };
 
@@ -24,11 +24,11 @@ export default function RootLayout({
           {/* Logo & Header */}
           <div className="p-5 border-b border-slate-800 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-11 h-11 rounded-full overflow-hidden bg-white p-0.5 shadow-lg shadow-blue-500/20 flex-shrink-0 border border-slate-700">
+              <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center">
                 <img
-                  src="/logo.jpg"
+                  src="/logo.png"
                   alt="UD-Class Logo"
-                  className="w-full h-full object-contain rounded-full"
+                  className="w-full h-full object-contain drop-shadow-md group-hover:scale-105 transition-transform"
                 />
               </div>
               <div>

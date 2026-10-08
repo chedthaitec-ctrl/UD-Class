@@ -575,7 +575,7 @@ export default function LineSimulatorPage() {
                 <div className="flex items-center gap-2">
                   <span className="text-xs">‹</span>
                   <div className="w-8 h-8 rounded-full overflow-hidden bg-white flex items-center justify-center p-0.5 border border-slate-700 flex-shrink-0">
-                    <img src="/logo.jpg" alt="UD-Class" className="w-full h-full object-contain rounded-full" />
+                    <img src="/logo.png" alt="UD-Class" className="w-full h-full object-contain" />
                   </div>
                   <div>
                     <h4 className="text-xs font-bold leading-tight">

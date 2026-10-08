@@ -62,11 +62,11 @@ function LoginForm() {
       <div className="w-full max-w-md space-y-6 relative z-10">
         {/* Brand Header */}
         <div className="text-center space-y-2">
-          <div className="w-16 h-16 rounded-3xl bg-white p-1 mx-auto shadow-2xl shadow-blue-500/20 border border-slate-700 flex items-center justify-center">
+          <div className="w-20 h-20 mx-auto flex items-center justify-center">
             <img
-              src="/logo.jpg"
+              src="/logo.png"
               alt="UD-Class Logo"
-              className="w-full h-full object-contain rounded-2xl"
+              className="w-full h-full object-contain drop-shadow-2xl"
             />
           </div>
           <h1 className="text-2xl font-black text-white tracking-tight">
