@@ -54,28 +54,37 @@ model Student {
 }
 
 model Assignment {
-  id          String       @id @default(cuid())
-  classroomId String
-  classroom   Classroom    @relation(fields: [classroomId], references: [id], onDelete: Cascade)
-  title       String
-  description String?
-  dueDate     DateTime
-  maxScore    Int          @default(100)
-  expReward   Int          @default(50)
-  submissions Submission[]
-  createdAt   DateTime     @default(now())
+  id            String       @id @default(cuid())
+  classroomId   String
+  classroom     Classroom    @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  title         String
+  description   String?
+  type          String       @default("GENERAL") // "GENERAL" หรือ "QUIZ"
+  format        String       @default("ALL")     // "ALL", "IMAGE", "VIDEO", "PDF", "SLIDES", "LINK"
+  dueDate       DateTime
+  maxScore      Int          @default(100)
+  expReward     Int          @default(50)
+  rubric        String?      // JSON string of rubric criteria
+  quizQuestions String?      // JSON string of quiz questions
+  submissions   Submission[]
+  createdAt     DateTime     @default(now())
 }
 
 model Submission {
-  id           String     @id @default(cuid())
-  assignmentId String
-  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-  studentId    String
-  student      Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  content      String?    // ไฟล์หรือลิงก์งาน / รายละเอียดงาน
-  submittedAt  DateTime   @default(now())
-  score        Float?
-  status       String     @default("SUBMITTED") // SUBMITTED, GRADED, LATE
+  id             String     @id @default(cuid())
+  assignmentId   String
+  assignment     Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  studentId      String
+  student        Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  content        String?    // ไฟล์หรือลิงก์งาน / รายละเอียดงาน / คำตอบ
+  submissionType String?    // "IMAGE", "VIDEO", "PDF", "SLIDES", "LINK", "QUIZ", "TEXT"
+  quizAnswers    String?    // JSON string of student answers
+  score          Float?
+  feedback       String?    // ความคิดเห็นคุณครู
+  aiFeedback     String?    // ข้อเสนอแนะและผลประเมินจาก AI ตาม Rubric
+  annotationData String?    // ลายเส้นคอมเมนต์ปากกาบนชิ้นงาน (JSON or base64)
+  status         String     @default("SUBMITTED") // SUBMITTED, GRADED, LATE
+  submittedAt    DateTime   @default(now())
 }
 
 model Attendance {

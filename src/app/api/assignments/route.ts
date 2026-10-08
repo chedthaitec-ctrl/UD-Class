@@ -39,6 +39,10 @@ export async function POST(req: NextRequest) {
       dueDate,
       maxScore = 100,
       expReward = 50,
+      type = "GENERAL",
+      format = "ALL",
+      rubric,
+      quizQuestions,
       broadcastToLine = true,
     } = body;
 
@@ -47,9 +51,13 @@ export async function POST(req: NextRequest) {
         classroomId,
         title: title.trim(),
         description: description ? description.trim() : null,
+        type: type || "GENERAL",
+        format: format || "ALL",
         dueDate: new Date(dueDate),
         maxScore: parseInt(maxScore, 10),
         expReward: parseInt(expReward, 10),
+        rubric: rubric ? (typeof rubric === "string" ? rubric : JSON.stringify(rubric)) : null,
+        quizQuestions: quizQuestions ? (typeof quizQuestions === "string" ? quizQuestions : JSON.stringify(quizQuestions)) : null,
       },
       include: {
         classroom: {
