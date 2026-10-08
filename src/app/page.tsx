@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 import DashboardView from "@/components/DashboardView";
 
 export const dynamic = "force-dynamic";
@@ -17,8 +18,28 @@ export default async function DashboardPage() {
   let presentCount = 0;
   let attendanceRate = 100;
   let dbError: string | null = null;
+  let currentUser = null;
 
   try {
+    currentUser = await getCurrentUser();
+
+    // กรองตามครูผู้ใช้งาน (ถ้าเป็นครู แยกดูเฉพาะห้องของตัวเอง)
+    const teacherFilterId = currentUser?.role === "TEACHER" ? currentUser.id : null;
+
+    const classroomWhere = teacherFilterId ? { teacherId: teacherFilterId } : {};
+    const studentWhere = teacherFilterId
+      ? { classroom: { teacherId: teacherFilterId } }
+      : {};
+    const lineStudentWhere = teacherFilterId
+      ? { classroom: { teacherId: teacherFilterId }, lineUserId: { not: null } }
+      : { lineUserId: { not: null } };
+    const assignmentWhere = teacherFilterId
+      ? { classroom: { teacherId: teacherFilterId } }
+      : {};
+    const eggWhere = teacherFilterId
+      ? { student: { classroom: { teacherId: teacherFilterId } }, isHatched: true }
+      : { isHatched: true };
+
     const [
       cCount,
       sCount,
@@ -29,12 +50,13 @@ export default async function DashboardPage() {
       rAssignments,
       tStudents,
     ] = await Promise.all([
-      prisma.classroom.count(),
-      prisma.student.count(),
-      prisma.student.count({ where: { lineUserId: { not: null } } }),
-      prisma.assignment.count(),
-      prisma.studentEgg.count({ where: { isHatched: true } }),
+      prisma.classroom.count({ where: classroomWhere }),
+      prisma.student.count({ where: studentWhere }),
+      prisma.student.count({ where: lineStudentWhere }),
+      prisma.assignment.count({ where: assignmentWhere }),
+      prisma.studentEgg.count({ where: eggWhere }),
       prisma.classroom.findMany({
+        where: classroomWhere,
         include: {
           teacher: true,
           _count: {
@@ -48,6 +70,7 @@ export default async function DashboardPage() {
         orderBy: { createdAt: "desc" },
       }),
       prisma.assignment.findMany({
+        where: assignmentWhere,
         include: {
           classroom: true,
           submissions: true,
@@ -56,6 +79,7 @@ export default async function DashboardPage() {
         take: 4,
       }),
       prisma.student.findMany({
+        where: studentWhere,
         include: {
           classroom: true,
           egg: { include: { hatchedMonster: true } },
@@ -77,8 +101,14 @@ export default async function DashboardPage() {
     // Today's attendance stats
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+
+    const attendanceWhere: any = { date: { gte: today } };
+    if (teacherFilterId) {
+      attendanceWhere.classroom = { teacherId: teacherFilterId };
+    }
+
     const todayAttendance = await prisma.attendance.findFirst({
-      where: { date: { gte: today } },
+      where: attendanceWhere,
       include: { records: true },
     });
 
@@ -92,6 +122,7 @@ export default async function DashboardPage() {
 
   return (
     <DashboardView
+      initialUser={currentUser}
       initialStats={{
         classroomsCount,
         studentsCount,

@@ -92,20 +92,43 @@ async function main() {
     }),
   ]);
 
-  // 2. Create Teacher
-  console.log("👨‍🏫 Creating Teacher...");
-  const teacher = await prisma.teacher.create({
+  // 2. Create Super Admin & Teachers
+  console.log("👨‍🏫 Creating Super Admin & Teachers...");
+  const admin = await prisma.teacher.create({
     data: {
-      email: "chedtha.teacher@school.ac.th",
-      name: "ครูเชษฐ์ พัฒนาวิชาการ",
+      email: "admin@udclass.ac.th",
+      name: "ผู้ดูแลระบบ (Super Admin)",
+      password: "admin",
+      role: "ADMIN",
+      department: "ศูนย์เทคโนโลยีสารสนเทศ (IT Center)",
     },
   });
 
-  // 3. Create Classrooms
-  console.log("🏫 Creating Classrooms...");
+  const teacher1 = await prisma.teacher.create({
+    data: {
+      email: "chedtha.teacher@school.ac.th",
+      name: "ครูเชษฐ์ พัฒนาวิชาการ",
+      password: "123456",
+      role: "TEACHER",
+      department: "กลุ่มสาระฯ วิทยาศาสตร์และเทคโนโลยี",
+    },
+  });
+
+  const teacher2 = await prisma.teacher.create({
+    data: {
+      email: "somchai.math@school.ac.th",
+      name: "ครูสมชาย สอนคณิต",
+      password: "123456",
+      role: "TEACHER",
+      department: "กลุ่มสาระฯ คณิตศาสตร์",
+    },
+  });
+
+  // 3. Create Classrooms (แยกห้องเรียนของครูแต่ละคน)
+  console.log("🏫 Creating Classrooms (Isolated per teacher)...");
   const classroom1 = await prisma.classroom.create({
     data: {
-      teacherId: teacher.id,
+      teacherId: teacher1.id,
       name: "วิทยาศาสตร์ ม.3/1 (ฟิสิกส์ & เทคโนโลยี)",
       lineGroupId: "C-sci301-demo-group",
       academicYear: "2569",
@@ -115,7 +138,7 @@ async function main() {
 
   const classroom2 = await prisma.classroom.create({
     data: {
-      teacherId: teacher.id,
+      teacherId: teacher2.id,
       name: "คณิตศาสตร์ ม.3/2 (สถิติและความน่าจะเป็น)",
       lineGroupId: "C-math302-demo-group",
       academicYear: "2569",

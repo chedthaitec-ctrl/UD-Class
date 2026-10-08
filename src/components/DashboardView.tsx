@@ -53,6 +53,14 @@ interface StudentItem {
 }
 
 interface DashboardViewProps {
+  initialUser?: {
+    id: string;
+    name: string;
+    email: string;
+    role: "ADMIN" | "TEACHER";
+    department?: string | null;
+    phone?: string | null;
+  } | null;
   initialStats: {
     classroomsCount: number;
     studentsCount: number;
@@ -69,12 +77,14 @@ interface DashboardViewProps {
 }
 
 export default function DashboardView({
+  initialUser,
   initialStats,
   initialClassrooms,
   initialRecentAssignments,
   initialTopStudents,
   initialDbError,
 }: DashboardViewProps) {
+  const [currentUser, setCurrentUser] = useState<any>(initialUser || null);
   const [stats, setStats] = useState(initialStats);
   const [classrooms, setClassrooms] = useState<ClassroomItem[]>(initialClassrooms);
   const [recentAssignments, setRecentAssignments] = useState<AssignmentItem[]>(initialRecentAssignments);
@@ -104,6 +114,9 @@ export default function DashboardView({
       });
       const data = await res.json();
       if (data.success) {
+        if (data.currentUser) {
+          setCurrentUser(data.currentUser);
+        }
         setStats(data.stats);
         setClassrooms(data.classrooms);
         setRecentAssignments(data.recentAssignments);
@@ -186,14 +199,28 @@ export default function DashboardView({
         <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-emerald-500/10 to-transparent pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-              <span>🌟 ระบบห้องเรียน Gamification พลัง AI & LINE Bot</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                <span>🌟 UD-Class Gamification & LINE Bot</span>
+              </span>
+              {currentUser?.role === "ADMIN" ? (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  <span>🛡️ สิทธิ์ผู้ดูแลระบบ (Super Admin)</span>
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                  <span>👨‍🏫 ครูผู้สอน: {currentUser?.department || "กลุ่มสาระฯ"}</span>
+                </span>
+              )}
             </div>
+
             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              ยินดีต้อนรับ, ครูเชษฐ์ พัฒนาวิชาการ
+              ยินดีต้อนรับ, {currentUser?.name || "คุณครูผู้สอน"}
             </h2>
             <p className="text-sm text-slate-300 max-w-xl">
-              จัดการห้องเรียน เช็คชื่อมอบหมายงาน ส่งข้อความแจ้งเตือนอัตโนมัติเข้ากลุ่ม LINE พร้อมระบบเพาะพันธุ์ไข่มอนสเตอร์สะสม EXP เพื่อสร้างแรงจูงใจในการเรียนรู้
+              {currentUser?.role === "ADMIN"
+                ? "ศูนย์ควบคุมส่วนกลาง: ดูแลคุณครูทุกท่าน จัดการเพิ่ม/ลบสมาชิกครู และตรวจสอบห้องเรียนทั้งหมดในโรงเรียน"
+                : "จัดการห้องเรียนของคุณครู เช็คชื่อ มอบหมายงาน และแจ้งเตือนอัตโนมัติเข้ากลุ่ม LINE (แสดงเฉพาะห้องเรียนที่คุณครูดูแล)"}
             </p>
             {lastUpdated && (
               <p className="text-[11px] text-emerald-400 font-medium flex items-center gap-1.5 pt-1">
@@ -215,6 +242,16 @@ export default function DashboardView({
               <span className={`text-base ${isRefreshing ? "animate-spin" : ""}`}>🔄</span>
               <span>{isRefreshing ? "กำลังรีเฟรช..." : "รีเฟรชข้อมูลล่าสุด"}</span>
             </button>
+
+            {currentUser?.role === "ADMIN" && (
+              <Link
+                href="/admin/teachers"
+                className="px-4 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition shadow-lg shadow-indigo-500/25 flex items-center gap-2"
+              >
+                <span>👥</span>
+                <span>จัดการคุณครู (แอดมิน)</span>
+              </Link>
+            )}
 
             <Link
               href="/simulator"

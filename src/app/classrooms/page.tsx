@@ -21,6 +21,8 @@ interface Classroom {
 
 export default function ClassroomsPage() {
   const [classrooms, setClassrooms] = useState<Classroom[]>([]);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [teachersList, setTeachersList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -28,6 +30,7 @@ export default function ClassroomsPage() {
     lineGroupId: "",
     academicYear: "2569",
     term: "1",
+    teacherId: "",
   });
   const [creating, setCreating] = useState(false);
   const [broadcastStatus, setBroadcastStatus] = useState<string | null>(null);
@@ -46,6 +49,20 @@ export default function ClassroomsPage() {
       const data = await res.json();
       if (data.success) {
         setClassrooms(data.classrooms);
+        if (data.currentUser) {
+          setCurrentUser(data.currentUser);
+          if (data.currentUser.role === "ADMIN") {
+            // ดึงรายชื่อครูทั้งหมดเพื่อให้แอดมินเลือกกำหนดครูผู้สอนได้
+            fetch("/api/admin/teachers")
+              .then((r) => r.json())
+              .then((tData) => {
+                if (tData.success && tData.teachers) {
+                  setTeachersList(tData.teachers);
+                }
+              })
+              .catch(() => {});
+          }
+        }
       }
     } catch (err) {
       console.error(err);
@@ -68,7 +85,7 @@ export default function ClassroomsPage() {
       const data = await res.json();
       if (data.success) {
         setShowCreateModal(false);
-        setFormData({ name: "", lineGroupId: "", academicYear: "2569", term: "1" });
+        setFormData({ name: "", lineGroupId: "", academicYear: "2569", term: "1", teacherId: "" });
         fetchClassrooms();
       }
     } catch (err) {
@@ -129,16 +146,38 @@ export default function ClassroomsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-slate-900 tracking-tight">
-            จัดการห้องเรียน (Classrooms)
-          </h2>
+          <div className="flex items-center gap-2 mb-1">
+            <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+              จัดการห้องเรียน (Classrooms)
+            </h2>
+            {currentUser?.role === "ADMIN" ? (
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                🛡️ ทุกห้องเรียน (Super Admin)
+              </span>
+            ) : (
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                👨‍🏫 ห้องของ: {currentUser?.name || "คุณครู"}
+              </span>
+            )}
+          </div>
           <p className="text-xs text-slate-500">
-            สร้างห้องเรียน แก้ไข ผูก Group ID กับ LINE หรือลบห้องเรียนที่ไม่ใช้งาน
+            {currentUser?.role === "ADMIN"
+              ? "ผู้ดูแลระบบ: ตรวจสอบและบริหารจัดการห้องเรียนทั้งหมดของทุกวิชาในโรงเรียน"
+              : `จัดการเฉพาะห้องเรียนของคุณครู (${currentUser?.name || ""}) เชื่อม LINE Group และเช็คชื่อนักเรียน`}
           </p>
         </div>
 
         <button
-          onClick={() => setShowCreateModal(true)}
+          onClick={() => {
+            setFormData({
+              name: "",
+              lineGroupId: "",
+              academicYear: "2569",
+              term: "1",
+              teacherId: currentUser?.id || "",
+            });
+            setShowCreateModal(true);
+          }}
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition shadow-sm"
         >
           <span>➕</span>
@@ -356,6 +395,25 @@ export default function ClassroomsPage() {
             </div>
 
             <form onSubmit={handleCreate} className="space-y-4 text-xs">
+              {currentUser?.role === "ADMIN" && teachersList.length > 0 && (
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">
+                    กำหนดคุณครูผู้สอน *
+                  </label>
+                  <select
+                    value={formData.teacherId || currentUser?.id || ""}
+                    onChange={(e) => setFormData({ ...formData, teacherId: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white text-xs"
+                  >
+                    {teachersList.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name} ({t.department || t.role})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <div>
                 <label className="block text-slate-700 font-bold mb-1">
                   ชื่อห้องเรียน / วิชา *
