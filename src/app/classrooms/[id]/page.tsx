@@ -312,7 +312,7 @@ export default async function ClassroomDetailPage({
                   {classroom.students.slice(0, 6).map((std) => (
                     <tr key={std.id} className="hover:bg-slate-50/80 transition">
                       <td className="py-3 font-black text-slate-900">
-                        {std.seatNumber}
+                        {std.seatNumber > 0 ? std.seatNumber : "-"}
                       </td>
                       <td className="py-3 font-semibold text-slate-800">
                         {std.name}

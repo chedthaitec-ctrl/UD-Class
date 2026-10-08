@@ -18,8 +18,8 @@ export async function GET(req: NextRequest) {
     const where: any = { classroomId };
     if (dateParam) {
       const targetDate = new Date(dateParam);
-      const startOfDay = new Date(targetDate.setHours(0, 0, 0, 0));
-      const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999));
+      const startOfDay = new Date(new Date(targetDate).setHours(0, 0, 0, 0));
+      const endOfDay = new Date(new Date(targetDate).setHours(23, 59, 59, 999));
       where.date = { gte: startOfDay, lte: endOfDay };
     }
 
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
 
     let attendance;
     if (existingAttendance) {
-      // ลบเรคอร์ดเดิมแล้วสร้างใหม่
+      // ลบเรคอร์ดเดิมของวันนี้แล้วสร้างใหม่
       await prisma.attendanceRecord.deleteMany({
         where: { attendanceId: existingAttendance.id },
       });
@@ -85,30 +85,42 @@ export async function POST(req: NextRequest) {
     let presentCount = 0;
     let lateCount = 0;
     let absentCount = 0;
-    let leaveCount = 0;
+    let sickLeaveCount = 0;
+    let personalLeaveCount = 0;
 
     for (const record of records) {
       const { studentId, status } = record;
+
+      // Normalization
+      let normalizedStatus = status;
+      if (status === "LEAVE") {
+        normalizedStatus = "PERSONAL_LEAVE";
+      }
 
       await prisma.attendanceRecord.create({
         data: {
           attendanceId: attendance.id,
           studentId,
-          status,
+          status: normalizedStatus,
         },
       });
 
-      // แจก EXP ให้กับนักเรียน
-      if (status === "PRESENT") {
+      // แจก EXP ตามเงื่อนไข:
+      // - มาเรียน: +15 EXP
+      // - มาสาย: +5 EXP
+      // - ขาด, ลาป่วย, ลากิจ: ไม่แจก EXP (0 EXP)
+      if (normalizedStatus === "PRESENT") {
         presentCount++;
         await addStudentExp(studentId, EXP_RULES.ATTENDANCE_PRESENT, 5);
-      } else if (status === "LATE") {
+      } else if (normalizedStatus === "LATE") {
         lateCount++;
         await addStudentExp(studentId, EXP_RULES.ATTENDANCE_LATE, 2);
-      } else if (status === "ABSENT") {
+      } else if (normalizedStatus === "ABSENT") {
         absentCount++;
-      } else if (status === "LEAVE") {
-        leaveCount++;
+      } else if (normalizedStatus === "SICK_LEAVE") {
+        sickLeaveCount++;
+      } else if (normalizedStatus === "PERSONAL_LEAVE") {
+        personalLeaveCount++;
       }
     }
 
@@ -121,7 +133,8 @@ export async function POST(req: NextRequest) {
         presentCount,
         lateCount,
         absentCount,
-        leaveCount,
+        sickLeaveCount,
+        personalLeaveCount,
         totalStudents: classroom.students.length,
       });
 
@@ -135,7 +148,8 @@ export async function POST(req: NextRequest) {
         present: presentCount,
         late: lateCount,
         absent: absentCount,
-        leave: leaveCount,
+        sickLeave: sickLeaveCount,
+        personalLeave: personalLeaveCount,
         total: records.length,
       },
       pushSuccess,

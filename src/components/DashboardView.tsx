@@ -630,7 +630,7 @@ export default function DashboardView({
                             {std.name}
                           </p>
                           <p className="text-[10px] text-slate-400">
-                            เลขที่ {std.seatNumber} • <span className="text-indigo-600 font-bold">Lv.{std.level}</span>
+                            {std.seatNumber > 0 ? `เลขที่ ${std.seatNumber} • ` : ""}<span className="text-indigo-600 font-bold">Lv.{std.level}</span>
                           </p>
                         </div>
                       </div>

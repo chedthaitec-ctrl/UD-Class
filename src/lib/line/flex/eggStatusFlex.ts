@@ -82,7 +82,7 @@ export function createEggStatusFlex(params: {
               contents: [
                 {
                   type: "text",
-                  text: `เลขที่ ${seatNumber} • Lv.${level}`,
+                  text: seatNumber > 0 ? `เลขที่ ${seatNumber} • Lv.${level}` : `Lv.${level}`,
                   size: "xs",
                   color: "#6b7280",
                   weight: "bold",
@@ -208,7 +208,7 @@ export function createEggStatusFlex(params: {
             contents: [
               {
                 type: "text",
-                text: `เลขที่ ${seatNumber} ${studentName}`,
+                text: seatNumber > 0 ? `เลขที่ ${seatNumber} ${studentName}` : studentName,
                 color: "#ffffff",
                 weight: "bold",
                 size: "sm",

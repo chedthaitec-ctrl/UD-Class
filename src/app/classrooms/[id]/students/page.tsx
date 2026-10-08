@@ -399,7 +399,7 @@ export default function StudentsRosterPage() {
                   return (
                     <tr key={std.id} className="hover:bg-slate-50/70 transition">
                       <td className="py-3 px-4 font-black text-slate-900 text-sm">
-                        {std.seatNumber}
+                        {std.seatNumber > 0 ? std.seatNumber : "-"}
                       </td>
 
                       <td className="py-3 px-4">

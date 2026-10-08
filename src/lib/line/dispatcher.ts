@@ -175,38 +175,31 @@ export async function autoEnrollStudent(
     return { student, isNew: true };
   }
 
-  // 4. หาเลขที่ถัดไป (Auto Seat Number: 1, 2, 3...)
-  const lastStudent = await prisma.student.findFirst({
-    where: { classroomId },
-    orderBy: { seatNumber: "desc" },
-  });
-  const nextSeatNumber = (lastStudent?.seatNumber || 0) + 1;
-
-  // สุ่มประเภทไข่และสีเริ่มต้น
+  // 4. สุ่มประเภทไข่และสีเริ่มต้น
   const eggTypes = ["NORMAL", "NORMAL", "NORMAL", "RARE"];
   const randomEggType = eggTypes[Math.floor(Math.random() * eggTypes.length)];
   const eggColors = ["amber", "emerald", "blue", "purple"];
   const randomColor = eggColors[Math.floor(Math.random() * eggColors.length)];
 
-  // 5. บันทึกนักเรียนเข้าห้องเรียนและสร้างไข่มอนสเตอร์พร้อมโบนัสเริ่มต้น +20 EXP
+  // 5. บันทึกนักเรียนเข้าห้องเรียน (ไม่ต้องกำหนดเลขที่ให้อัตโนมัติ: seatNumber = 0) และสร้างไข่มอนสเตอร์พร้อมโบนัสเริ่มต้น +10 EXP
   student = await prisma.student.create({
     data: {
       classroomId,
       lineUserId: userId,
-      seatNumber: nextSeatNumber,
+      seatNumber: 0, // ไม่กำหนดเลขที่ให้อัตโนมัติ
       name: displayName.trim(),
       avatarUrl:
         avatarUrl ||
         `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(userId)}`,
-      totalPoints: 20,
-      exp: 20,
+      totalPoints: 10,
+      exp: 10,
       level: 1,
       egg: {
         create: {
           eggName: `ไข่มอนสเตอร์เริ่มต้น (เกรด ${randomEggType})`,
           eggType: randomEggType,
           eggColor: randomColor,
-          currentExp: 20,
+          currentExp: 10,
           targetExp: 100,
           isHatched: false,
         },
@@ -281,7 +274,7 @@ export async function dispatchLineEvent(event: any): Promise<DispatchResult> {
           if (res?.isNew) {
             replyMessages.push({
               type: "text",
-              text: `🐣 ยินดีต้อนรับ ${res.student.name} (เลขที่ ${res.student.seatNumber}) เข้าสู่ห้อง ${classroom.name}!\n✨ ระบบลงทะเบียนเข้าชั้นเรียนให้อัตโนมัติ พร้อมมอบไข่มอนสเตอร์และโบนัสต้อนรับ +20 EXP ให้ทันที! 🌟\n(พิมพ์ #ไข่ เพื่อดูมอนสเตอร์ของคุณ)`,
+              text: `🐣 ยินดีต้อนรับ ${res.student.name} เข้าสู่ห้อง ${classroom.name}!\n✨ คุณได้รับไข่มอนสเตอร์และโบนัสต้อนรับ +10 EXP ทันที! 🌟\n(พิมพ์ #ไข่ เพื่อดูมอนสเตอร์ของคุณ)`,
             });
           }
         }
@@ -312,11 +305,11 @@ export async function dispatchLineEvent(event: any): Promise<DispatchResult> {
           enrolledStudent = enrollResult.student;
 
           // หากเป็นสมาชิกที่เพิ่งถูกเพิ่มเข้ามาใหม่ และไม่ได้พิมพ์คำสั่งขึ้นต้นด้วย #
-          // ให้ส่งข้อความต้อนรับและแจ้งเลขที่ + ไข่มอนสเตอร์อัตโนมัติ
+          // ให้ส่งข้อความต้อนรับเข้าห้องเรียนเพียงอย่างเดียว ไม่ต้องบอกเลขที่
           if (enrollResult.isNew && !rawText.startsWith("#")) {
             replyMessages.push({
               type: "text",
-              text: `🎉 ยินดีต้อนรับ ${enrolledStudent.name} (เลขที่ ${enrolledStudent.seatNumber}) เข้าสู่ห้อง ${classroom.name}!\n🐣 ระบบลงทะเบียนเข้าชั้นเรียนให้อัตโนมัติเรียบร้อย ได้รับไข่มอนสเตอร์และ +20 EXP ทันที ✨\n(พิมพ์ #ไข่ เพื่อดูมอนสเตอร์ หรือ #การบ้าน เพื่อดูงาน)`,
+              text: `🎉 ยินดีต้อนรับ ${enrolledStudent.name} เข้าสู่ห้อง ${classroom.name}!\n🐣 คุณได้รับไข่มอนสเตอร์และโบนัสต้อนรับ +10 EXP ทันที ✨\n(พิมพ์ #ไข่ เพื่อดูมอนสเตอร์ หรือ #การบ้าน เพื่อดูงาน)`,
             });
           }
         }
@@ -616,7 +609,8 @@ export async function dispatchLineEvent(event: any): Promise<DispatchResult> {
             ? `👾 [${s.egg.hatchedMonster?.name || "ฟักแล้ว"}]`
             : `🥚 (${s.egg?.currentExp || 0}/100 EXP)`;
           const lineIcon = s.lineUserId ? "🟢" : "⚪";
-          return `${lineIcon} เลขที่ ${s.seatNumber} ${s.name} • Lv.${s.level} (${s.totalPoints}แต้ม) ${eggStatus}`;
+          const seatTag = s.seatNumber > 0 ? `เลขที่ ${s.seatNumber} ` : "";
+          return `${lineIcon} ${seatTag}${s.name} • Lv.${s.level} (${s.totalPoints}แต้ม) ${eggStatus}`;
         })
         .join("\n");
 
@@ -723,7 +717,8 @@ export async function dispatchLineEvent(event: any): Promise<DispatchResult> {
         const present = records.filter((r) => r.status === "PRESENT").length;
         const late = records.filter((r) => r.status === "LATE").length;
         const absent = records.filter((r) => r.status === "ABSENT").length;
-        const leave = records.filter((r) => r.status === "LEAVE").length;
+        const sickLeave = records.filter((r) => r.status === "SICK_LEAVE" || r.status === "SICK").length;
+        const personalLeave = records.filter((r) => r.status === "PERSONAL_LEAVE" || r.status === "LEAVE").length;
 
         replyMessages.push(
           createAttendanceFlex({
@@ -732,7 +727,8 @@ export async function dispatchLineEvent(event: any): Promise<DispatchResult> {
             presentCount: present,
             lateCount: late,
             absentCount: absent,
-            leaveCount: leave,
+            sickLeaveCount: sickLeave,
+            personalLeaveCount: personalLeave,
             totalStudents: totalStudentsCount,
           })
         );

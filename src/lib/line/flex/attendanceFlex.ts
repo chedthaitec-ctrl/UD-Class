@@ -6,7 +6,9 @@ export function createAttendanceFlex(params: {
   presentCount: number;
   lateCount: number;
   absentCount: number;
-  leaveCount: number;
+  sickLeaveCount?: number;
+  personalLeaveCount?: number;
+  leaveCount?: number;
   totalStudents: number;
 }): FlexMessage {
   const {
@@ -15,9 +17,13 @@ export function createAttendanceFlex(params: {
     presentCount,
     lateCount,
     absentCount,
-    leaveCount,
+    sickLeaveCount = 0,
+    personalLeaveCount,
+    leaveCount = 0,
     totalStudents,
   } = params;
+
+  const actualPersonalLeave = personalLeaveCount !== undefined ? personalLeaveCount : leaveCount;
 
   const formattedDate = new Intl.DateTimeFormat("th-TH", {
     dateStyle: "full",
@@ -36,7 +42,7 @@ export function createAttendanceFlex(params: {
       header: {
         type: "box",
         layout: "vertical",
-        backgroundColor: "#2563eb",
+        backgroundColor: "#0f172a",
         paddingAll: "20px",
         contents: [
           {
@@ -46,14 +52,14 @@ export function createAttendanceFlex(params: {
               {
                 type: "text",
                 text: "📋 บันทึกการเข้าเรียนประจำวัน",
-                color: "#dbeafe",
+                color: "#38bdf8",
                 weight: "bold",
                 size: "xs",
               },
               {
                 type: "text",
-                text: "✨ +15 EXP / คน",
-                color: "#fef08a",
+                text: "✨ +15 EXP (มาเรียน)",
+                color: "#facc15",
                 weight: "bold",
                 size: "xs",
                 align: "end",
@@ -71,7 +77,7 @@ export function createAttendanceFlex(params: {
           {
             type: "text",
             text: formattedDate,
-            color: "#bfdbfe",
+            color: "#94a3b8",
             size: "xs",
             margin: "xs",
           },
@@ -107,10 +113,11 @@ export function createAttendanceFlex(params: {
             type: "separator",
             margin: "sm",
           },
+          // Row 1: มาเรียน, มาสาย, ขาด
           {
             type: "box",
             layout: "horizontal",
-            spacing: "md",
+            spacing: "sm",
             margin: "md",
             contents: [
               {
@@ -127,6 +134,7 @@ export function createAttendanceFlex(params: {
                     size: "xxs",
                     color: "#059669",
                     align: "center",
+                    weight: "bold",
                   },
                   {
                     type: "text",
@@ -136,6 +144,13 @@ export function createAttendanceFlex(params: {
                     color: "#047857",
                     align: "center",
                     margin: "xs",
+                  },
+                  {
+                    type: "text",
+                    text: "+15 EXP",
+                    size: "xxxs",
+                    color: "#10b981",
+                    align: "center",
                   },
                 ],
               },
@@ -153,6 +168,7 @@ export function createAttendanceFlex(params: {
                     size: "xxs",
                     color: "#d97706",
                     align: "center",
+                    weight: "bold",
                   },
                   {
                     type: "text",
@@ -162,6 +178,13 @@ export function createAttendanceFlex(params: {
                     color: "#b45309",
                     align: "center",
                     margin: "xs",
+                  },
+                  {
+                    type: "text",
+                    text: "+5 EXP",
+                    size: "xxxs",
+                    color: "#f59e0b",
+                    align: "center",
                   },
                 ],
               },
@@ -175,10 +198,11 @@ export function createAttendanceFlex(params: {
                 contents: [
                   {
                     type: "text",
-                    text: "ขาดเรียน",
+                    text: "ขาด",
                     size: "xxs",
                     color: "#dc2626",
                     align: "center",
+                    weight: "bold",
                   },
                   {
                     type: "text",
@@ -189,31 +213,88 @@ export function createAttendanceFlex(params: {
                     align: "center",
                     margin: "xs",
                   },
+                  {
+                    type: "text",
+                    text: "0 EXP",
+                    size: "xxxs",
+                    color: "#ef4444",
+                    align: "center",
+                  },
                 ],
               },
+            ],
+          },
+          // Row 2: ลาป่วย, ลากิจ
+          {
+            type: "box",
+            layout: "horizontal",
+            spacing: "sm",
+            contents: [
               {
                 type: "box",
                 layout: "vertical",
-                backgroundColor: "#f3f4f6",
+                backgroundColor: "#eef2ff",
                 cornerRadius: "8px",
                 paddingAll: "10px",
                 flex: 1,
                 contents: [
                   {
                     type: "text",
-                    text: "ลา",
+                    text: "ลาป่วย",
                     size: "xxs",
-                    color: "#4b5563",
+                    color: "#4f46e5",
                     align: "center",
+                    weight: "bold",
                   },
                   {
                     type: "text",
-                    text: `${leaveCount}`,
+                    text: `${sickLeaveCount}`,
                     size: "xl",
                     weight: "bold",
-                    color: "#374151",
+                    color: "#4338ca",
                     align: "center",
                     margin: "xs",
+                  },
+                  {
+                    type: "text",
+                    text: "0 EXP",
+                    size: "xxxs",
+                    color: "#6366f1",
+                    align: "center",
+                  },
+                ],
+              },
+              {
+                type: "box",
+                layout: "vertical",
+                backgroundColor: "#f5f3ff",
+                cornerRadius: "8px",
+                paddingAll: "10px",
+                flex: 1,
+                contents: [
+                  {
+                    type: "text",
+                    text: "ลากิจ",
+                    size: "xxs",
+                    color: "#7c3aed",
+                    align: "center",
+                    weight: "bold",
+                  },
+                  {
+                    type: "text",
+                    text: `${actualPersonalLeave}`,
+                    size: "xl",
+                    weight: "bold",
+                    color: "#6d28d9",
+                    align: "center",
+                    margin: "xs",
+                  },
+                  {
+                    type: "text",
+                    text: "0 EXP",
+                    size: "xxxs",
+                    color: "#8b5cf6",
+                    align: "center",
                   },
                 ],
               },
@@ -226,7 +307,7 @@ export function createAttendanceFlex(params: {
             contents: [
               {
                 type: "text",
-                text: "🌟 แจก +15 EXP ให้กับนักเรียนที่เข้าเรียนเรียบร้อย!",
+                text: "🌟 บันทึกผลเช็คชื่อและส่งผลสรุปเรียบร้อยแล้ว",
                 size: "xxs",
                 color: "#16a34a",
                 align: "center",
@@ -243,7 +324,7 @@ export function createAttendanceFlex(params: {
           {
             type: "button",
             style: "primary",
-            color: "#2563eb",
+            color: "#0f172a",
             action: {
               type: "message",
               label: "🥚 ตรวจสอบไข่มอนสเตอร์ของคุณ",
