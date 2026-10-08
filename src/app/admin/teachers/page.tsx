@@ -84,10 +84,14 @@ export default function AdminTeachersPage() {
       const res = await fetch("/api/admin/teachers");
       const data = await res.json();
       if (data.success) {
-        setTeachers(data.teachers);
         if (data.currentUser) {
+          if (data.currentUser.role !== "ADMIN" && !data.currentUser.originalAdminId) {
+            router.push("/");
+            return;
+          }
           setCurrentUser(data.currentUser);
         }
+        setTeachers(data.teachers);
       } else {
         setErrorMsg(data.error || "ไม่สามารถโหลดข้อมูลครูได้");
       }

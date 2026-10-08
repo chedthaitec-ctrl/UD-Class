@@ -434,7 +434,7 @@ export default function ClassroomsPage() {
                 </label>
                 <input
                   type="text"
-                  placeholder="เช่น C-sci301-demo-group หรือ Ca1234..."
+                  placeholder="เช่น Ca1234567890abcdef... หรือ C-sci301-group"
                   value={formData.lineGroupId}
                   onChange={(e) => setFormData({ ...formData, lineGroupId: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-xs"

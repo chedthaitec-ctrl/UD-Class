@@ -70,6 +70,14 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const currentUser = await getCurrentUser();
+    if (!currentUser || (currentUser.role !== "ADMIN" && !currentUser.originalAdminId)) {
+      return NextResponse.json(
+        { success: false, error: "เฉพาะผู้ดูแลระบบใหญ่เท่านั้นที่ได้รับอนุญาตให้เพิ่มคุณครู" },
+        { status: 403 }
+      );
+    }
+
     const body = await req.json();
     const { name, email, password, role = "TEACHER", department, phone } = body;
 

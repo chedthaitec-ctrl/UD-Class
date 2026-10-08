@@ -8,13 +8,14 @@ export interface AuthUser {
   role: "ADMIN" | "TEACHER";
   department: string | null;
   phone?: string | null;
+  originalAdminId?: string | null;
 }
 
 const SESSION_COOKIE_NAME = "udclass_session";
 
 /**
  * ดึงข้อมูลผู้ใช้งานที่กำลังล็อกอินอยู่ปัจจุบันจาก Cookie (Server Component / Route Handler)
- * หากยังไม่มี Session จะคืนค่าเป็นคุณครูคนแรก หรือ Super Admin เป็นค่าเริ่มต้น (เพื่อความสะดวก)
+ * โหมดใช้งานจริง (Production): หากไม่มี Session หรือ Session หมดอายุ จะคืนค่าเป็น null
  */
 export async function getCurrentUser(): Promise<AuthUser | null> {
   try {
@@ -39,45 +40,19 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
           });
 
           if (teacher) {
-            return teacher as AuthUser;
+            return {
+              ...teacher,
+              originalAdminId: parsed.originalAdminId || null,
+            } as AuthUser;
           }
         }
       } catch (err) {
-        console.warn("Invalid session cookie JSON, falling back");
+        console.warn("Invalid session cookie JSON");
       }
     }
 
-    // หากไม่มี Cookie ให้ดึงคุณครูคนแรกของระบบเป็น Default
-    const defaultTeacher = await prisma.teacher.findFirst({
-      where: { role: "TEACHER" },
-      orderBy: { createdAt: "asc" },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        department: true,
-        phone: true,
-      },
-    });
-
-    if (defaultTeacher) {
-      return defaultTeacher as AuthUser;
-    }
-
-    // หากยังไม่มีครู ให้ดึงคนแรกสุดในตาราง
-    const anyUser = await prisma.teacher.findFirst({
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        department: true,
-        phone: true,
-      },
-    });
-
-    return (anyUser as AuthUser) || null;
+    // พร้อมใช้งานจริง: ไม่คืนค่าจำลอง คืนค่า null เพื่อให้ระบบพาไปหน้าล็อกอิน
+    return null;
   } catch (error) {
     console.error("getCurrentUser error:", error);
     return null;
@@ -87,7 +62,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
 /**
  * เข้ารหัสข้อมูลผู้ใช้สำหรับบันทึกลงใน Cookie
  */
-export function serializeSession(user: AuthUser): string {
+export function serializeSession(user: AuthUser, originalAdminId?: string | null): string {
   return encodeURIComponent(
     JSON.stringify({
       id: user.id,
@@ -95,6 +70,7 @@ export function serializeSession(user: AuthUser): string {
       name: user.name,
       role: user.role,
       department: user.department,
+      originalAdminId: originalAdminId || user.originalAdminId || null,
     })
   );
 }

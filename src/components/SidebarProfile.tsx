@@ -69,12 +69,26 @@ export default function SidebarProfile() {
   };
 
   const isAdmin = currentUser?.role === "ADMIN";
+  const isImpersonating = !!currentUser?.originalAdminId;
 
   return (
     <>
       <div className="p-3 border-t border-slate-800 bg-slate-950/70">
+        {/* Banner เมื่อแอดมินกำลังสลับดูในมุมมองครู */}
+        {isImpersonating && (
+          <div className="mb-2 p-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-[11px] text-amber-300 flex items-center justify-between">
+            <span className="truncate">👁️ ดูในมุมมองครู</span>
+            <button
+              onClick={() => handleSwitch(currentUser.originalAdminId)}
+              className="text-[10px] font-bold bg-amber-500 text-slate-950 px-2 py-0.5 rounded hover:bg-amber-400 transition"
+            >
+              คืนสิทธิ์แอดมิน
+            </button>
+          </div>
+        )}
+
         {/* Admin Navigation Banner (Visible when user is Admin) */}
-        {isAdmin && (
+        {isAdmin && !isImpersonating && (
           <Link
             href="/admin/teachers"
             className="mb-2.5 flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 border border-amber-500/30 transition group"
@@ -93,7 +107,7 @@ export default function SidebarProfile() {
         <div
           onClick={() => setShowSwitchModal(true)}
           className="flex items-center justify-between p-2 rounded-xl hover:bg-slate-800/80 transition cursor-pointer group"
-          title="คลิกเพื่อสลับบัญชีหรือดูโปรไฟล์"
+          title="คลิกเพื่อดูข้อมูลบัญชีผู้ใช้งาน"
         >
           <div className="flex items-center gap-3 overflow-hidden">
             <div
@@ -108,34 +122,36 @@ export default function SidebarProfile() {
             <div className="overflow-hidden">
               <div className="flex items-center gap-1.5">
                 <p className="text-xs font-bold text-white truncate group-hover:text-emerald-400 transition">
-                  {currentUser?.name || "ครูเชษฐ์ พัฒนาวิชาการ"}
+                  {currentUser?.name || "เข้าสู่ระบบ"}
                 </p>
               </div>
               <p className="text-[10px] text-slate-400 truncate">
                 {isAdmin
                   ? "ผู้ดูแลระบบใหญ่ (Super Admin)"
-                  : currentUser?.department || "กลุ่มสาระฯ วิทยาศาสตร์"}
+                  : currentUser?.department || "กลุ่มสาระการเรียนรู้"}
               </p>
             </div>
           </div>
 
           <span className="text-slate-500 group-hover:text-slate-300 text-xs px-1">
-            ⇅
+            ⚙️
           </span>
         </div>
       </div>
 
-      {/* Switch Account Modal */}
+      {/* Account Info & Switch Modal */}
       {showSwitchModal && (
         <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in text-slate-900">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-xs">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
                 <h3 className="font-black text-slate-900 text-sm">
-                  บัญชีผู้ใช้งาน & สลับโปรไฟล์
+                  บัญชีผู้ใช้งานปัจจุบัน
                 </h3>
                 <p className="text-[11px] text-slate-400">
-                  สลับระหว่างผู้ดูแลระบบและคุณครูแต่ละท่าน
+                  {isAdmin || isImpersonating
+                    ? "จัดการสิทธิ์และสลับบัญชีผู้สอน"
+                    : "ข้อมูลประจำตัวคุณครูผู้สอน"}
                 </p>
               </div>
               <button
@@ -147,38 +163,77 @@ export default function SidebarProfile() {
             </div>
 
             {/* Current Active User Info */}
-            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-              <div>
-                <span className="text-[10px] font-bold text-slate-400 block mb-0.5">
-                  กำลังใช้งานอยู่ในชื่อ:
-                </span>
-                <span className="font-extrabold text-slate-800 text-xs block">
-                  {currentUser?.name}
-                </span>
-                <span className="text-[11px] text-slate-500 font-mono">
-                  {currentUser?.email}
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] font-bold text-slate-400 block mb-0.5">
+                    ชื่อ-นามสกุล:
+                  </span>
+                  <span className="font-black text-slate-900 text-sm block">
+                    {currentUser?.name}
+                  </span>
+                </div>
+                <span
+                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                    isAdmin
+                      ? "bg-amber-100 text-amber-800"
+                      : "bg-blue-100 text-blue-800"
+                  }`}
+                >
+                  {isAdmin ? "🛡️ Super Admin" : "👨‍🏫 คุณครูผู้สอน"}
                 </span>
               </div>
-              <span
-                className={`px-2 py-1 rounded-full text-[10px] font-bold ${
-                  isAdmin
-                    ? "bg-amber-100 text-amber-800"
-                    : "bg-blue-100 text-blue-800"
-                }`}
-              >
-                {isAdmin ? "🛡️ Super Admin" : "👨‍🏫 ครูผู้สอน"}
-              </span>
+
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200/60 text-[11px]">
+                <div>
+                  <span className="text-slate-400 block text-[10px]">อีเมล:</span>
+                  <span className="font-mono text-slate-700 truncate block">
+                    {currentUser?.email}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-400 block text-[10px]">สังกัด:</span>
+                  <span className="text-slate-700 truncate block">
+                    {currentUser?.department || "-"}
+                  </span>
+                </div>
+              </div>
             </div>
 
-            {/* Quick Switch Options */}
-            <div className="space-y-2">
-              <span className="text-[11px] font-bold text-slate-500 block">
-                ⚡ สลับบัญชีด่วน:
-              </span>
+            {/* หากเป็นผู้ที่สลับมาจากแอดมิน มีปุ่มคืนสิทธิ์ */}
+            {isImpersonating && (
+              <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 flex items-center justify-between">
+                <span className="text-[11px] text-amber-900 font-semibold">
+                  คุณกำลังสลับมาดูในนามของ {currentUser?.name}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleSwitch(currentUser.originalAdminId)}
+                  className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-[11px] transition"
+                >
+                  ↩️ คืนสิทธิ์แอดมิน
+                </button>
+              </div>
+            )}
 
-              <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-                {teachers.length > 0 ? (
-                  teachers.map((t) => {
+            {/* สำหรับ Admin: แสดงรายชื่อครูเพื่อสลับบัญชี (Impersonate) */}
+            {(isAdmin || isImpersonating) && teachers.length > 0 && (
+              <div className="space-y-2 pt-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-slate-600">
+                    👁️ สลับดูห้องเรียนของครูท่านอื่น:
+                  </span>
+                  <Link
+                    href="/admin/teachers"
+                    onClick={() => setShowSwitchModal(false)}
+                    className="text-[10px] font-semibold text-indigo-600 hover:underline"
+                  >
+                    จัดการครูทั้งหมด →
+                  </Link>
+                </div>
+
+                <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                  {teachers.map((t) => {
                     const isSelected = t.id === currentUser?.id;
                     return (
                       <button
@@ -215,14 +270,10 @@ export default function SidebarProfile() {
                         )}
                       </button>
                     );
-                  })
-                ) : (
-                  <div className="text-center py-3 text-slate-400 text-xs">
-                    ไม่มีรายชื่อครูอื่นในระบบ
-                  </div>
-                )}
+                  })}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Footer Actions */}
             <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
@@ -230,26 +281,20 @@ export default function SidebarProfile() {
                 <Link
                   href="/admin/teachers"
                   onClick={() => setShowSwitchModal(false)}
-                  className="px-3 py-2 rounded-xl text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition"
+                  className="px-3.5 py-2 rounded-xl text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition"
                 >
-                  👥 จัดการครูทั้งหมด
+                  👥 หน้าแอดมินใหญ่
                 </Link>
               )}
 
               <div className="flex items-center gap-2 ml-auto">
-                <Link
-                  href="/login"
-                  onClick={() => setShowSwitchModal(false)}
-                  className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition"
-                >
-                  หน้าเข้าสู่ระบบ
-                </Link>
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 transition"
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 border border-rose-200 transition flex items-center gap-1.5"
                 >
-                  ออกจากระบบ
+                  <span>🚪</span>
+                  <span>ออกจากระบบ</span>
                 </button>
               </div>
             </div>

@@ -13,7 +13,7 @@ interface MessageItem {
 
 export default function LineSimulatorPage() {
   const [chatType, setChatType] = useState<"group" | "private">("group");
-  const [selectedGroupId, setSelectedGroupId] = useState("C-sci301-demo-group");
+  const [selectedGroupId, setSelectedGroupId] = useState("C-sci301-group");
   const [selectedUserId, setSelectedUserId] = useState("U_student_01");
 
   const [inputMessage, setInputMessage] = useState("");
@@ -28,9 +28,26 @@ export default function LineSimulatorPage() {
   const [isTyping, setIsTyping] = useState(false);
   const chatBottomRef = useRef<HTMLDivElement>(null);
 
+  const [classrooms, setClassrooms] = useState<any[]>([]);
+
   useEffect(() => {
     chatBottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
+
+  useEffect(() => {
+    fetch("/api/classrooms")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.classrooms?.length > 0) {
+          setClassrooms(data.classrooms);
+          const firstWithLine = data.classrooms.find((c: any) => c.lineGroupId);
+          if (firstWithLine) {
+            setSelectedGroupId(firstWithLine.lineGroupId);
+          }
+        }
+      })
+      .catch((err) => console.error("Error loading simulator classrooms:", err));
+  }, []);
 
   const sendMessage = async (text: string) => {
     if (!text.trim()) return;
@@ -423,14 +440,27 @@ export default function LineSimulatorPage() {
                 <select
                   value={selectedGroupId}
                   onChange={(e) => setSelectedGroupId(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white text-xs"
                 >
-                  <option value="C-sci301-demo-group">
-                    วิทยาศาสตร์ ม.3/1 (C-sci301-demo-group)
-                  </option>
-                  <option value="C-math302-demo-group">
-                    คณิตศาสตร์ ม.3/2 (C-math302-demo-group)
-                  </option>
+                  {classrooms.length > 0 ? (
+                    classrooms.map((c) => (
+                      <option
+                        key={c.id}
+                        value={c.lineGroupId || `GROUP_${c.id}`}
+                      >
+                        {c.name} {c.lineGroupId ? `(${c.lineGroupId})` : "(ยังไม่ได้กำหนด ID)"}
+                      </option>
+                    ))
+                  ) : (
+                    <>
+                      <option value="C-sci301-group">
+                        วิทยาศาสตร์ ม.3/1 (C-sci301-group)
+                      </option>
+                      <option value="C-math302-group">
+                        คณิตศาสตร์ ม.3/2 (C-math302-group)
+                      </option>
+                    </>
+                  )}
                   <option value="C-unknown-new-group">
                     กลุ่มใหม่ที่ยังไม่เคยผูก (C-unknown-new-group)
                   </option>

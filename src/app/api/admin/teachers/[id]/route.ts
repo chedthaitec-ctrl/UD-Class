@@ -47,6 +47,14 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    const currentUser = await getCurrentUser();
+    if (!currentUser || (currentUser.role !== "ADMIN" && !currentUser.originalAdminId)) {
+      return NextResponse.json(
+        { success: false, error: "เฉพาะผู้ดูแลระบบใหญ่เท่านั้นที่ได้รับอนุญาตให้แก้ไขคุณครู" },
+        { status: 403 }
+      );
+    }
+
     const teacherId = params.id;
     const body = await req.json();
     const { name, email, password, role, department, phone } = body;
@@ -109,6 +117,13 @@ export async function DELETE(
   try {
     const teacherId = params.id;
     const currentUser = await getCurrentUser();
+
+    if (!currentUser || (currentUser.role !== "ADMIN" && !currentUser.originalAdminId)) {
+      return NextResponse.json(
+        { success: false, error: "เฉพาะผู้ดูแลระบบใหญ่เท่านั้นที่ได้รับอนุญาตให้ลบคุณครู" },
+        { status: 403 }
+      );
+    }
 
     // ป้องกันการลบบัญชีตัวเอง
     if (currentUser && currentUser.id === teacherId) {

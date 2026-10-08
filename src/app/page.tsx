@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import DashboardView from "@/components/DashboardView";
@@ -7,6 +8,17 @@ export const revalidate = 0;
 export const fetchCache = "force-no-store";
 
 export default async function DashboardPage() {
+  let currentUser = null;
+  try {
+    currentUser = await getCurrentUser();
+  } catch (err) {
+    console.error("getCurrentUser error in DashboardPage:", err);
+  }
+
+  if (!currentUser) {
+    redirect("/login");
+  }
+
   let classroomsCount = 0;
   let studentsCount = 0;
   let lineLinkedStudentsCount = 0;
@@ -18,13 +30,10 @@ export default async function DashboardPage() {
   let presentCount = 0;
   let attendanceRate = 100;
   let dbError: string | null = null;
-  let currentUser = null;
 
   try {
-    currentUser = await getCurrentUser();
-
     // กรองตามครูผู้ใช้งาน (ถ้าเป็นครู แยกดูเฉพาะห้องของตัวเอง)
-    const teacherFilterId = currentUser?.role === "TEACHER" ? currentUser.id : null;
+    const teacherFilterId = currentUser.role === "TEACHER" ? currentUser.id : null;
 
     const classroomWhere = teacherFilterId ? { teacherId: teacherFilterId } : {};
     const studentWhere = teacherFilterId
