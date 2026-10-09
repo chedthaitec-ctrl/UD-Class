@@ -105,16 +105,11 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      // แจก EXP ตามเงื่อนไข:
-      // - มาเรียน: +15 EXP
-      // - มาสาย: +5 EXP
-      // - ขาด, ลาป่วย, ลากิจ: ไม่แจก EXP (0 EXP)
+      // สถิติการเช็คชื่อ (ไม่แจก EXP แล้วตามข้อกำหนด)
       if (normalizedStatus === "PRESENT") {
         presentCount++;
-        await addStudentExp(studentId, EXP_RULES.ATTENDANCE_PRESENT, 5);
       } else if (normalizedStatus === "LATE") {
         lateCount++;
-        await addStudentExp(studentId, EXP_RULES.ATTENDANCE_LATE, 2);
       } else if (normalizedStatus === "ABSENT") {
         absentCount++;
       } else if (normalizedStatus === "SICK_LEAVE") {

@@ -30,6 +30,7 @@ model Classroom {
   lineGroupId  String?      @unique // ผูกกับ Group ID จริงของ LINE
   academicYear String       @default("2569")
   term         String       @default("1")
+  startDate    DateTime?    // วันที่เริ่มเรียนตามตารางสอน
   students     Student[]
   assignments  Assignment[]
   attendances  Attendance[]
@@ -50,6 +51,7 @@ model Student {
   submissions Submission[]
   attendances AttendanceRecord[]
   egg         StudentEgg?
+  monsters    StudentMonster[]
   createdAt   DateTime           @default(now())
 }
 
@@ -121,11 +123,27 @@ model StudentEgg {
 }
 
 model Monster {
-  id          String       @id @default(cuid())
-  name        String
-  species     String
-  rarity      String       // COMMON, RARE, EPIC, LEGENDARY
-  element     String       // FIRE, WATER, NATURE, LIGHT, DARK
-  imageUrl    String
-  studentEggs StudentEgg[]
+  id              String           @id @default(cuid())
+  name            String
+  species         String
+  rarity          String           // COMMON, RARE, EPIC, LEGENDARY
+  element         String           // FIRE, WATER, NATURE, LIGHT, DARK, THUNDER, WIND, EARTH
+  imageUrl        String
+  description     String?
+  attack          Int              @default(100)
+  defense         Int              @default(100)
+  studentEggs     StudentEgg[]
+  studentMonsters StudentMonster[]
+}
+
+model StudentMonster {
+  id          String   @id @default(cuid())
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  monsterId   String
+  monster     Monster  @relation(fields: [monsterId], references: [id], onDelete: Cascade)
+  level       Int      @default(1)
+  exp         Int      @default(0)
+  isEquipped  Boolean  @default(false) // มอนสเตอร์คู่หูที่ตั้งเป็นตัวหลัก
+  obtainedAt  DateTime @default(now())
 }

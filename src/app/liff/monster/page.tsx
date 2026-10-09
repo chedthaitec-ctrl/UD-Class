@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import confetti from "canvas-confetti";
 
 interface Student {
@@ -92,12 +93,21 @@ export default function LiffMonsterPage() {
   return (
     <div className="max-w-lg mx-auto py-4 px-2 space-y-6">
       {/* Top Banner */}
-      <div className="bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-600 rounded-3xl p-6 text-white text-center shadow-xl space-y-2">
+      <div className="bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-600 rounded-3xl p-6 text-white text-center shadow-xl space-y-3">
         <div className="text-4xl animate-bounce">🥚</div>
         <h2 className="text-xl font-black">ห้องฟักไข่มอนสเตอร์ (Incubator)</h2>
         <p className="text-xs text-amber-100">
-          สะสม EXP จากการส่งงานและการเช็คชื่อ เพื่อสุ่มฟักมอนสเตอร์คู่หู!
+          สะสม EXP จากการส่งการบ้านและทำแบบทดสอบ เพื่อสุ่มฟักมอนสเตอร์คู่หู!
         </p>
+        <div className="pt-1">
+          <Link
+            href="/liff/my-monsters"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-950/80 hover:bg-slate-950 text-amber-300 font-bold text-xs transition border border-amber-300/30 shadow-md"
+          >
+            <span>🎒</span>
+            <span>ดูกระเป๋ามอนสเตอร์ & ตู้กาชา (5 / 50 EXP) →</span>
+          </Link>
+        </div>
       </div>
 
       {/* Student Selector */}
@@ -190,7 +200,7 @@ export default function LiffMonsterPage() {
                 </div>
 
                 <p className="text-[11px] text-slate-400 text-left pt-1">
-                  💡 ส่งการบ้านตรงเวลาได้ +50 EXP • เช็คชื่อเข้าเรียนได้ +15 EXP
+                  💡 ส่งการบ้านตรงเวลาและทำควิซเพื่อรับ EXP มาฟักไข่และแลกตู้กาชา!
                 </p>
               </div>
 

@@ -159,16 +159,22 @@ export default function MonsterSanctuaryPage() {
             มอนสเตอร์ฟักแล้ว {hatchedCount} / {students.length} ตัว
           </h3>
           <p className="text-xs text-slate-300 max-w-lg">
-            เมื่อนักเรียนทำการบ้านหรือเข้าเรียนครบ 100 EXP ไข่จะพร้อมกะเทาะเปลือกและสุ่มสายพันธุ์มอนสเตอร์หายาก Common, Rare, Epic ไปจนถึง Legendary!
+            เมื่อนักเรียนทำการบ้านหรือทำแบบทดสอบครบ 100 EXP ไข่จะพร้อมกะเทาะเปลือกและสุ่มสายพันธุ์มอนสเตอร์หายาก Common, Rare, Epic ไปจนถึง Legendary!
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href="/liff/my-monsters"
+            className="px-4 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 transition shadow-md"
+          >
+            🎒 ดูกระเป๋า & ตู้กาชา (LIFF)
+          </Link>
           <Link
             href="/monsters"
             className="px-4 py-2 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition"
           >
-            📖 ดูสารานุกรมมอนสเตอร์ทั้งหมด
+            📖 สารานุกรมมอนสเตอร์
           </Link>
         </div>
       </div>
@@ -212,11 +218,14 @@ export default function MonsterSanctuaryPage() {
                   {/* Egg or Monster Visual */}
                   {egg.isHatched && egg.hatchedMonster ? (
                     <div className="py-2">
-                      <img
-                        src={egg.hatchedMonster.imageUrl}
-                        alt={egg.hatchedMonster.name}
-                        className="w-24 h-24 mx-auto rounded-2xl object-cover shadow-lg border-2 border-purple-300"
-                      />
+                      <div className="w-24 h-24 mx-auto rounded-2xl bg-slate-950 p-2 shadow-lg border-2 border-purple-300 flex items-center justify-center">
+                        <img
+                          src={egg.hatchedMonster.imageUrl}
+                          alt={egg.hatchedMonster.name}
+                          className="w-20 h-20 object-contain"
+                          style={{ imageRendering: "pixelated" }}
+                        />
+                      </div>
                       <div className="mt-3">
                         <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">
                           {egg.hatchedMonster.rarity}

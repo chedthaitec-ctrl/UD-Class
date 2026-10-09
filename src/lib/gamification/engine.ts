@@ -1,8 +1,8 @@
 import { prisma } from "../prisma";
 
 export const EXP_RULES = {
-  ATTENDANCE_PRESENT: 15,
-  ATTENDANCE_LATE: 5,
+  ATTENDANCE_PRESENT: 0, // ยกเลิกการแจก EXP จากการเช็คชื่อ
+  ATTENDANCE_LATE: 0,    // ยกเลิกการแจก EXP จากการเช็คชื่อ
   SUBMISSION_DEFAULT: 50,
   HIGH_SCORE_BONUS: 20,
 };
@@ -151,6 +151,26 @@ export async function hatchEgg(studentId: string): Promise<HatchResult> {
       eggName: `มอนสเตอร์: ${selectedMonster.name}`,
     },
   });
+
+  // บันทึกเข้าสู่กระเป๋ามอนสเตอร์ของนักเรียน (StudentMonster)
+  const existingInBag = await prisma.studentMonster.findFirst({
+    where: {
+      studentId,
+      monsterId: selectedMonster.id,
+    },
+  });
+
+  if (!existingInBag) {
+    await prisma.studentMonster.create({
+      data: {
+        studentId,
+        monsterId: selectedMonster.id,
+        level: 1,
+        exp: 0,
+        isEquipped: true,
+      },
+    });
+  }
 
   // โบนัสแต้มพิเศษจากการฟักมอนสเตอร์
   const bonusPoints = rarity === "LEGENDARY" ? 100 : rarity === "EPIC" ? 50 : 25;

@@ -54,27 +54,21 @@ export async function GET(
     const dailyRows = classroom.students.map((std, idx) => {
       const status = recordMap[std.id] || (targetAtt ? "ABSENT" : "PRESENT");
       let statusLabel = "มาเรียน";
-      let exp = 0;
 
       if (status === "PRESENT") {
         statusLabel = "มาเรียน";
-        exp = 15;
         present++;
       } else if (status === "LATE") {
         statusLabel = "มาสาย";
-        exp = 5;
         late++;
       } else if (status === "ABSENT") {
         statusLabel = "ขาด";
-        exp = 0;
         absent++;
       } else if (status === "SICK_LEAVE" || status === "SICK") {
         statusLabel = "ลาป่วย";
-        exp = 0;
         sickLeave++;
       } else if (status === "PERSONAL_LEAVE" || status === "LEAVE") {
         statusLabel = "ลากิจ";
-        exp = 0;
         personalLeave++;
       }
 
@@ -83,7 +77,6 @@ export async function GET(
         "เลขที่": std.seatNumber > 0 ? std.seatNumber : "-",
         "ชื่อ-นามสกุล": std.name,
         "สถานะ": statusLabel,
-        "EXP ที่ได้": exp,
         "วันที่": targetDate,
         "ห้องเรียน": classroom.name,
       };
@@ -91,23 +84,28 @@ export async function GET(
 
     // Summary footer rows
     dailyRows.push(
-      { "ลำดับ": "" as any, "เลขที่": "" as any, "ชื่อ-นามสกุล": "" as any, "สถานะ": "" as any, "EXP ที่ได้": "" as any, "วันที่": "" as any, "ห้องเรียน": "" as any },
+      { "ลำดับ": "" as any, "เลขที่": "" as any, "ชื่อ-นามสกุล": "" as any, "สถานะ": "" as any, "วันที่": "" as any, "ห้องเรียน": "" as any },
       {
         "ลำดับ": "สรุปยอดรวม" as any,
         "เลขที่": `มาเรียน: ${present}` as any,
         "ชื่อ-นามสกุล": `มาสาย: ${late}` as any,
         "สถานะ": `ขาด: ${absent}` as any,
-        "EXP ที่ได้": `ลาป่วย: ${sickLeave}` as any,
-        "วันที่": `ลากิจ: ${personalLeave}` as any,
-        "ห้องเรียน": `รวม: ${classroom.students.length} คน` as any,
+        "วันที่": `ลาป่วย: ${sickLeave} / ลากิจ: ${personalLeave}` as any,
+        "ห้องเรียน": `รวม: ${classroom.students.length} คน (เข้าเรียน ${classroom.students.length > 0 ? Math.round(((present + late) / classroom.students.length) * 100) : 0}%)` as any,
       }
     );
 
     const wsDaily = XLSX.utils.json_to_sheet(dailyRows);
     XLSX.utils.book_append_sheet(wb, wsDaily, `วันที่_${targetDate}`);
 
-    // 2. Sheet สรุปภาพรวมสะสมทุกครั้ง
+    // 2. Sheet สรุปภาพรวมสะสมทุกครั้งตลอดทั้งเทอม
     if (classroom.attendances.length > 0) {
+      let totalAllPresent = 0;
+      let totalAllLate = 0;
+      let totalAllAbsent = 0;
+      let totalAllSick = 0;
+      let totalAllPersonal = 0;
+
       const cumulativeRows = classroom.students.map((std, idx) => {
         let stdPresent = 0;
         let stdLate = 0;
@@ -126,6 +124,12 @@ export async function GET(
           }
         });
 
+        totalAllPresent += stdPresent;
+        totalAllLate += stdLate;
+        totalAllAbsent += stdAbsent;
+        totalAllSick += stdSick;
+        totalAllPersonal += stdPersonal;
+
         const totalDays = classroom.attendances.length;
         const attendedRate = totalDays > 0 ? Math.round(((stdPresent + stdLate) / totalDays) * 100) : 0;
 
@@ -139,12 +143,34 @@ export async function GET(
           "ลาป่วย (ครั้ง)": stdSick,
           "ลากิจ (ครั้ง)": stdPersonal,
           "จำนวนวันที่เช็คชื่อรวม": totalDays,
-          "อัตราการเข้าเรียน (%)": `${attendedRate}%`,
+          "อัตราการเข้าเรียนสะสม (%)": `${attendedRate}%`,
         };
       });
 
+      const totalPossibleAttendances = classroom.students.length * classroom.attendances.length;
+      const classAverageRate = totalPossibleAttendances > 0 
+        ? Math.round(((totalAllPresent + totalAllLate) / totalPossibleAttendances) * 100) 
+        : 0;
+
+      // เพิ่มแถวสรุปผลรวมทั้งเทอม
+      cumulativeRows.push(
+        { "ลำดับ": "" as any, "เลขที่": "" as any, "ชื่อ-นามสกุล": "" as any, "มาเรียน (ครั้ง)": "" as any, "มาสาย (ครั้ง)": "" as any, "ขาด (ครั้ง)": "" as any, "ลาป่วย (ครั้ง)": "" as any, "ลากิจ (ครั้ง)": "" as any, "จำนวนวันที่เช็คชื่อรวม": "" as any, "อัตราการเข้าเรียนสะสม (%)": "" as any },
+        {
+          "ลำดับ": "สรุปผลรวมทั้งเทอม" as any,
+          "เลขที่": `นักเรียนทั้งหมด ${classroom.students.length} คน` as any,
+          "ชื่อ-นามสกุล": `รวมวันเช็คชื่อ ${classroom.attendances.length} วัน` as any,
+          "มาเรียน (ครั้ง)": totalAllPresent as any,
+          "มาสาย (ครั้ง)": totalAllLate as any,
+          "ขาด (ครั้ง)": totalAllAbsent as any,
+          "ลาป่วย (ครั้ง)": totalAllSick as any,
+          "ลากิจ (ครั้ง)": totalAllPersonal as any,
+          "จำนวนวันที่เช็คชื่อรวม": totalPossibleAttendances as any,
+          "อัตราการเข้าเรียนสะสม (%)": `เฉลี่ยทั้งห้อง ${classAverageRate}%` as any,
+        }
+      );
+
       const wsCumulative = XLSX.utils.json_to_sheet(cumulativeRows);
-      XLSX.utils.book_append_sheet(wb, wsCumulative, "สถิติสะสมรายบุคคล");
+      XLSX.utils.book_append_sheet(wb, wsCumulative, "สถิติสะสมภาพรวม");
     }
 
     const buffer = XLSX.write(wb, { type: "buffer", bookType: "xlsx" });

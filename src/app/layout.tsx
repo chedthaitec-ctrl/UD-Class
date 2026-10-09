@@ -117,6 +117,14 @@ export default function RootLayout({
               <span>ห้องฟักไข่ (LIFF Incubator)</span>
             </Link>
 
+            <Link
+              href="/liff/my-monsters"
+              className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all duration-200 group"
+            >
+              <span className="text-sm group-hover:scale-110 transition-transform">🎒</span>
+              <span>กระเป๋ามอนสเตอร์ & ตู้กาชา (LIFF)</span>
+            </Link>
+
             <div className="pt-3 text-[10px] font-extrabold tracking-widest text-slate-400 uppercase px-3 py-1.5">
               ระบบ & แอดมิน
             </div>
